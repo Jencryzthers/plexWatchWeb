@@ -59,8 +59,6 @@ if (file_exists($guisettingsFile)) {
 				
 			}	
 		}
-		
-		
 	}
 
 }else{

@@ -1,3 +1,5 @@
+<?php include("password_protect.php"); ?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -45,7 +47,7 @@
 					<li><a href="users.php"><i class="icon-2x icon-group icon-white" data-toggle="tooltip" data-placement="bottom" title="Users" id="users"></i></a></li>
 					<li><a href="charts.php"><i class="icon-2x icon-bar-chart icon-white" data-toggle="tooltip" data-placement="bottom" title="Charts" id="charts"></i></a></li>
 					<li><a href="settings.php"><i class="icon-2x icon-wrench icon-white" data-toggle="tooltip" data-placement="bottom" title="Settings" id="settings"></i></a></li>
-					
+					<li><a href="index.php?logout=1"><i class="icon-2x icon-remove icon-white" data-toggle="tooltip" data-placement="bottom" title="Logout" id="Logout"></i></a></li>
 				</ul>
 				
 			</div>
