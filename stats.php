@@ -89,6 +89,10 @@
 						echo "<div class='span6'><div class='wellbg'><div class='history-charts-header'><strong>Daily Plays</strong><br></div><div class='history-charts-instance-chart'  id='playChartDaily'></div></div></div>";
 						echo "<div class='span6'><div class='wellbg'><div class='history-charts-header'><strong>Monthly Plays</strong><br></div><div class='history-charts-instance-chart' id='playChartMonthly'></div></div></div>";
 					echo "</div>";
+					echo "<div class='row-fluid'>";	
+						echo "<div class='span6'><div class='wellbg'><div class='history-charts-header'><strong>Daily Distinct Users</strong><br></div><div class='history-charts-instance-chart'  id='userChartDaily'></div></div></div>";
+						echo "<div class='span6'><div class='wellbg'><div class='history-charts-header'><strong>Monthly Distinct Users</strong><br></div><div class='history-charts-instance-chart' id='userChartMonthly'></div></div></div>";
+					echo "</div>";
 				
 			echo "</div>";
 		
@@ -177,8 +181,52 @@
 						$monthlyPlayFinal .= $monthlyPlayTotal;
 					}	
 					
+					// Adding Daily users
+					$sql = "SELECT date(D.time, 'unixepoch','localtime') as date
+						,(
+							SELECT COUNT(DISTINCT (CU.user))
+							FROM $plexWatchDbTable CU
+							Where date(CU.time, 'unixepoch','localtime')=date(D.time, 'unixepoch','localtime')
+						) AS count
+						FROM $plexWatchDbTable D
+						GROUP BY date(D.time, 'unixepoch','localtime')
+						ORDER BY D.time DESC LIMIT 30;";
+					$dailyUsers = $db->query($sql) or die ("Failed to access plexWatch database. Please check your settings.");
+					$dailyUsersNum = 0;
+					$dailyUserFinal = '';
+					$dailyUsersDate = array();
+					$dailyUsersCount = array();
+					while ($dailyUser = $dailyUsers->fetchArray()) {
+						$dailyUsersNum++;
+						$dailyUsersDate[$dailyUsersNum] = $dailyUser['date'];
+						$dailyUsersCount[$dailyUsersNum] = $dailyUser['count'];
+						$dailyUserTotal = "{ \"x\": \"".$dailyUsersDate[$dailyUsersNum]."\", \"y\": ".$dailyUsersCount[$dailyUsersNum]." }, ";
+						$dailyUserFinal .= $dailyUserTotal;
+					}
 					
-					
+					$sql = "SELECT strftime('%Y-%m', datetime(D.time, 'unixepoch', 'localtime')) as date
+						,(
+							SELECT COUNT(DISTINCT (U.user))
+							FROM $plexWatchDbTable U
+							Where  strftime('%Y-%m', datetime(U.time, 'unixepoch', 'localtime'))=strftime('%Y-%m', datetime(D.time, 'unixepoch', 'localtime'))
+						) AS count
+						FROM $plexWatchDbTable D
+						WHERE datetime(D.time, 'unixepoch', 'localtime') >= datetime('now', '-12 months', 'localtime') 
+						GROUP BY strftime('%Y-%m', datetime(D.time, 'unixepoch', 'localtime'))
+						ORDER BY strftime('%Y-%m', datetime(D.time, 'unixepoch', 'localtime')) DESC LIMIT 6;
+						";
+					$monthlyUsers = $db->query($sql) or die ("Failed to access plexWatch database. Please check your settings.");
+					$monthlyUsersNum = 0;
+					$monthlyUserFinal = '';
+					$monthlyUsersDate = array();
+					$monthlyUsersCount = array();
+					while ($monthlyUser = $monthlyUsers->fetchArray()) {
+						$monthlyUsersNum++;
+						$monthlyUsersDate[$monthlyUsersNum] = $monthlyUser['date'];
+						$monthlyUsersCount[$monthlyUsersNum] = $monthlyUser['count'];
+						$monthlyUserTotal = "{ \"x\": \"".$monthlyUsersDate[$monthlyUsersNum]."\", \"y\": ".$monthlyUsersCount[$monthlyUsersNum]." }, ";
+						$monthlyUserFinal .= $monthlyUserTotal;
+					}						
 					?>
 						
 					
@@ -388,5 +436,83 @@
 	var myChart = new xChart('line-dotted', data, '#playChartMonthly', opts);
 	</script>
 
+	<script>
+	// Adding Daily users
+		var tt = document.createElement('div'),
+		  leftOffset = -(~~$('html').css('padding-left').replace('px', '') + ~~$('body').css('margin-left').replace('px', '')),
+		  topOffset = -35;
+		tt.className = 'ex-tooltip';
+		document.body.appendChild(tt);
+
+		var data = {
+		  "xScale": "ordinal",
+		  "yScale": "linear",
+		  "main": [
+			{
+			  "className": ".playcount",
+			  "data": [
+				<?php echo $dailyUserFinal ?>
+			  ]
+			}
+		  ]
+		};
+		var opts = {
+		  "dataFormatX": function (x) { return d3.time.format('%Y-%m-%d').parse(x); },
+		  "tickFormatX": function (x) { return d3.time.format('%b %e')(x); },
+		  "paddingLeft": ('35'),
+		  "paddingRight": ('35'),
+		  "paddingTop": ('10'),
+		  "tickHintY": ('5'),
+		  "mouseover": function (d, i) {
+			var pos = $(this).offset();
+			$(tt).text(d3.time.format('%b %e')(d.x) + ': ' + d.y + ' user(s)')
+			  .css({top: topOffset + pos.top, left: pos.left + leftOffset})
+			  .show();
+		  },
+		  "mouseout": function (x) {
+			$(tt).hide();
+		  }
+		};
+		var myChart = new xChart('bar', data, '#userChartDaily', opts);
+	</script>
+	
+	<script>
+		var tt = document.createElement('div'),
+		  leftOffset = -(~~$('html').css('padding-left').replace('px', '') + ~~$('body').css('margin-left').replace('px', '')),
+		  topOffset = -35;
+		tt.className = 'ex-tooltip';
+		document.body.appendChild(tt);
+
+		var data = {
+		  "xScale": "ordinal",
+		  "yScale": "linear",
+		  "main": [
+			{
+			  "className": ".playcount",
+			  "data": [
+				<?php echo $monthlyUserFinal ?>
+			  ]
+			}
+		  ]
+		};
+		var opts = {
+		  "dataFormatX": function (x) { return d3.time.format('%Y-%m').parse(x); },
+		  "tickFormatX": function (x) { return d3.time.format('%b')(x); },
+		  "paddingLeft": ('35'),
+		  "paddingRight": ('35'),
+		  "paddingTop": ('10'),
+		  "tickHintY": ('5'),
+		  "mouseover": function (d, i) {
+			var pos = $(this).offset();
+			$(tt).text(d3.time.format('%b')(d.x) + ': ' + d.y + ' user(s)')
+			  .css({top: topOffset + pos.top, left: pos.left + leftOffset})
+			  .show();
+		  },
+		  "mouseout": function (x) {
+			$(tt).hide();
+		  }
+		};
+		var myChart = new xChart('line-dotted', data, '#userChartMonthly', opts);
+	</script>	
   </body>
 </html>
