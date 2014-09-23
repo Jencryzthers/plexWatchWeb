@@ -1,5 +1,5 @@
 <?php
-include '/includes/config.php';
+include '/config/users.php';
 $timeout = (TIMEOUT_MINUTES == 0 ? 0 : time() + TIMEOUT_MINUTES * 60);
 
 if(isset($_GET['logout'])) {
