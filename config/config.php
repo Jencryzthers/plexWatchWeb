@@ -1,3 +1,3 @@
 <?php
-require_once 'C:\xampp\htdocs\_perso\plexwatch/includes/functions.php';
-$plexWatch['dateFormat'] = 'm/d/Y';$plexWatch['timeFormat'] = 'g:i a';$plexWatch['pmsIp'] = 'dev.devjc.net';$plexWatch['pmsHttpPort'] = '32400';$plexWatch['pmsHttpsPort'] = '32443';$plexWatch['https'] = 'no';$plexWatch['plexWatchDb'] = 'plexwatch.db';$plexWatch['myPlexUser'] = '';$plexWatch['myPlexPass'] = '';$plexWatch['myPlexAuthToken'] = '';$plexWatch['globalHistoryGrouping'] = 'yes';$plexWatch['userHistoryGrouping'] = 'yes';$plexWatch['chartsGrouping'] = 'yes';?>
+require_once '/includes/functions.php';
+$plexWatch['dateFormat'] = 'm/d/Y';$plexWatch['timeFormat'] = 'g:i a';$plexWatch['pmsIp'] = '';$plexWatch['pmsHttpPort'] = '';$plexWatch['pmsHttpsPort'] = '';$plexWatch['https'] = 'no';$plexWatch['plexWatchDb'] = '';$plexWatch['myPlexUser'] = '';$plexWatch['myPlexPass'] = '';$plexWatch['myPlexAuthToken'] = '';$plexWatch['globalHistoryGrouping'] = 'yes';$plexWatch['userHistoryGrouping'] = 'yes';$plexWatch['chartsGrouping'] = 'yes';?>
