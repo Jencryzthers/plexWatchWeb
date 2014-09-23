@@ -1,3 +1,0 @@
-<?php
-require_once '/includes/functions.php';
-$plexWatch['dateFormat'] = 'm/d/Y';$plexWatch['timeFormat'] = 'g:i a';$plexWatch['pmsIp'] = '';$plexWatch['pmsHttpPort'] = '';$plexWatch['pmsHttpsPort'] = '';$plexWatch['https'] = 'no';$plexWatch['plexWatchDb'] = '';$plexWatch['myPlexUser'] = '';$plexWatch['myPlexPass'] = '';$plexWatch['myPlexAuthToken'] = '';$plexWatch['globalHistoryGrouping'] = 'yes';$plexWatch['userHistoryGrouping'] = 'yes';$plexWatch['chartsGrouping'] = 'yes';?>
