@@ -1,5 +1,5 @@
-plexWatch/Web - v1.5.4.2
-========================
+plexWatch/Web - v1.7.0-2 dev
+============================
 
 A web front-end for plexWatch.
 
@@ -18,9 +18,9 @@ A web front-end for plexWatch.
 
 ###Features
 -----------
-* Responsive web design viewable on desktop, tablet and mobile web browsers 
+* Responsive web design viewable on desktop, tablet and mobile web browsers
 
-* Themed to complement Plex/Web 
+* Themed to complement Plex/Web
 
 * Easy configuration setup via html form
 
@@ -36,7 +36,7 @@ A web front-end for plexWatch.
 	* stream type (direct, transcoded)
 	* video type & resolution
 	* audio type & channel count.
-	
+
 * Recently added media and how long ago it was added
 
 * Global watching history charts (hourly, max hourly, daily, monthly)
@@ -53,14 +53,14 @@ A web front-end for plexWatch.
 	* stop time
 	* duration length
 	* percentage completed
-	
+
 * full user list with general information and comparison stats
 
 * individual user information
 	- username and gravatar (if available)
 	- daily, weekly, monthly, all time stats for play count and duration length
 	- individual platform stats for each user
-	- public ip address history with last seen date and geo tag location 
+	- public ip address history with last seen date and geo tag location
 	- recently watched content
 	- watching history
 * charts
@@ -69,7 +69,7 @@ A web front-end for plexWatch.
 	- top 10 viewed tv shows
 	- top 10 viewed tv episodes
 
-* content information pages 
+* content information pages
 	- movies (includes watching history)
 	- tv shows (includes top 10 watched episodes)
 	- tv seasons
@@ -78,8 +78,8 @@ A web front-end for plexWatch.
 
 ###Requirements
 ---------------
-* Plex Media Server (v0.9.8+) and a PlexPass membership
-* plexWatch (v0.1.6+)
+* Plex Media Server (v0.9.9+)
+* plexWatch (v0.3.2+)
 * a web server that supports php (apache, nginx, XAMPP, WampServer, EasyPHP, lighttpd, etc)
 * php5
 * php5-sqlite
@@ -87,16 +87,15 @@ A web front-end for plexWatch.
 * php5-json
 
 
-### Install 
+### Install
 -----------
 
 1. Install requirements
 2. Download and unzip the plexWatchWeb package.
-3. Upload the contents to the desired location on your web server "/var/www/plexWatch"
+3. Upload the contents to the desired location on your web server. For example: "/var/www/plexWatch"
 
 
 ###Use
 ------
 
 Navigate to: http://ip-of-web-server/plexWatch
-

@@ -1,13 +1,11 @@
 <?php
 include 'config/users.php';
 $timeout = (TIMEOUT_MINUTES == 0 ? 0 : time() + TIMEOUT_MINUTES * 60);
-
 if(isset($_GET['logout'])) {
   setcookie("verify", '', $timeout, '/'); // clear password;
   header('Location: ' . LOGOUT_URL);
   exit();
 }
-
 if(!function_exists('showLoginPasswordProtect')) {
 	function showLoginPasswordProtect($error_msg) {
 	?>
@@ -41,13 +39,11 @@ if(!function_exists('showLoginPasswordProtect')) {
 		  var _gaq = _gaq || [];
 		  _gaq.push(['_setAccount', 'UA-36811158-1']);
 		  _gaq.push(['_trackPageview']);
-
 		  (function() {
 			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 		  })();
-
 		</script>
 		 <script>
 		 var isNS = (navigator.appName == "Netscape") ? 1 : 0;
@@ -86,9 +82,7 @@ if(!function_exists('showLoginPasswordProtect')) {
 		  die();
 	}	
 }
-
 if (isset($_POST['access_password'])) {
-
   $login = isset($_POST['access_login']) ? $_POST['access_login'] : '';
   $pass = $_POST['access_password'];
   if (!USE_USERNAME && !in_array($pass, $LOGIN_INFORMATION)

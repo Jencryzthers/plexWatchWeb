@@ -1,804 +1,701 @@
 <?php include("password_protect.php"); ?>
+<?php
+require_once(dirname(__FILE__) . '/includes/functions.php');
 
+function printSettings() {
+	global $settings;
+	if ($settings) {
+		$haveConfig = true;
+	} else {
+		$haveConfig = false;
+	}
+	echo '<div class="row-fluid">';
+		echo '<div class="span3">';
+			echo '<ul class="nav nav-list">';
+				echo '<li class="active"><a href="#info">General</a></li>';
+				echo '<li><a href="#pms">PMS &amp; Database</a></li>';
+				echo '<li><a href="#myplex">Plex.tv Authentication</a></li>';
+				echo '<li><a href="#grouping">Grouping</a></li>';
+			echo '</ul>';
+		echo '</div>';
+		echo '<div class="span9">';
+			echo '<form action="includes/process_settings.php" method="POST">';
+				echo '<fieldset>';
+					if ($haveConfig) {
+						printVersions();
+					}
+					printGeneralSettings($haveConfig);
+					printDateTimeFormat();
+					printPMSSettings($haveConfig);
+					printPlexAuthSettings();
+					printGroupingSettings($haveConfig);
+					echo '<div class="form-actions">';
+						echo '<div class="control-group">';
+							echo '<label class="control-label" for="submit"></label>';
+							echo '<div class="controls">';
+								echo '<div id="friendlyName">';
+									echo '<button id="submit" name="submit" ' .
+										'class="btn btn-medium btn-primary" value="save">';
+										echo 'Save';
+									echo '</button>';
+									echo '<a href="index.php" class="btn btn-medium btn-cancel">';
+										echo 'Cancel';
+									echo '</a>';
+								echo '</div>';
+							echo '</div>';
+						echo '</div>';
+					echo '</div>';
+				echo '</fieldset>';
+			echo '</form>';
+		echo '</div>';
+	echo '</div>';
+}
+
+function printVersions() {
+	global $settings;
+	$database = dbconnect();
+	echo '<div class="wellbg">';
+		echo '<div class="wellheader">';
+			echo '<div class="dashboard-wellheader">';
+				echo '<h3><a id="version">Version Information</a></h3>';
+			echo '</div>';
+		echo '</div>';
+		echo '<div class="settings-general-info">';
+			echo '<ul>';
+				// FIXME: Version should be specified in the settings
+				echo '<li>plexWatch/Web Version: <strong>v';
+					echo $settings->getVersionString();
+				echo '</strong></li>';
+				$query = "SELECT version FROM config";
+				$results = getResults($database, $query);
+				$plexWatchVersion = $results->fetchColumn();
+				echo '<li>plexWatch Version: <strong>';
+					echo 'v' . $plexWatchVersion;
+				echo '</strong></li>';
+			echo '</ul>';
+		echo '</div>';
+	echo '</div>';
+}
+
+function printGeneralSettings($haveConfig) {
+	global $settings;
+	echo '<div class="wellbg">';
+		echo '<div class="wellheader">';
+			echo '<div class="dashboard-wellheader">';
+				echo '<h3><a id="info">General</a></h3>';
+			echo '</div>';
+		echo '</div>';
+		// Text input
+		echo '<div class="control-group">';
+			echo '<p class="help-block">';
+				echo 'The date &amp; display format plexWatch/Web should use. ';
+				echo '<a href="#dateTimeOptionsModal" data-toggle="modal">';
+					echo 'Format options';
+				echo '</a>';
+			echo '</p>';
+			echo '<br>';
+			echo '<label class="control-label" for="dateFormat">Date Format</label>';
+			echo '<div class="controls">';
+				echo '<input id="dateFormat" name="dateFormat" type="text" ' .
+					'placeholder="M/D/YYYY" class="input-small" required="" ' .
+					'value="';
+					if ($haveConfig) {
+						echo $settings->getDateFormat();
+					} else {
+						echo 'M/D/YYYY';
+					}
+					echo '">';
+			echo '</div>';
+		echo '</div>';
+		echo '<div class="control-group">';
+			echo '<label class="control-label" for="timeFormat">Time Format</label>';
+			echo '<div class="controls">';
+				echo '<input id="timeFormat" name="timeFormat" type="text" '.
+					'placeholder="hh:mm a" class="input-mini" required="" value="';
+					if ($haveConfig) {
+						echo $settings->getTimeFormat();
+					} else {
+						echo 'hh:mm a';
+					}
+					echo '">';
+			echo '</div>';
+		echo '</div>';
+	echo '</div>';
+}
+
+function printDateTimeFormat() {
+	echo '<div id="dateTimeOptionsModal" class="modal hide fade" tabindex="-1" ' .
+		'role="dialog" aria-labelledby="dateTimeOptionsModal" aria-hidden="true">';
+		echo '<div class="modal-header">';
+			echo '<button type="button" class="close" data-dismiss="modal" ' .
+				'aria-hidden="true">';
+				echo '<i class="fa fa-remove"></i>';
+			echo '</button>';
+			echo '<h3 id="myModalLabel">Date &amp; Time Format Options</h3>';
+		echo '</div>';
+		echo '<div class="modal-body">';
+			echo '<div class="span12">';
+				echo '<table>';
+					echo '<tbody>';
+						printDTRows();
+					echo '</tbody>';
+				echo '</table>';
+			echo '</div>';
+		echo '</div>';
+		echo '<div class="modal-footer"></div>';
+	echo '</div>';
+}
+
+function printDTRows() {
+	echo '<tr><td colspan="3"><h5>Day</h5></td></tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>DD</strong></td>';
+		echo '<td width="300">Numeric, with leading zeros</td>';
+		echo '<td>01 to 31</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>D</strong></td>';
+		echo '<td>Numeric, without leading zeros</td>';
+		echo '<td>1 to 31</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>Do</strong></td>';
+		echo '<td>The English suffix for the day of the month</td>';
+		echo '<td>st, nd or th in the 1st, 2nd or 15th.</td>';
+	echo '</tr>';
+
+	echo '<tr><td colspan="3"><h5>Month</h5></td></tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>MM</strong></td>';
+		echo '<td>Numeric, with leading zeros</td>';
+		echo '<td>01 to 31</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>M</strong></td>';
+		echo '<td>Numeric, without leading zeros</td>';
+		echo '<td>1 to 31</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>MMMM</strong></td>';
+		echo '<td>Textual full</td>';
+		echo '<td>January – December</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>MMM</strong></td>';
+		echo '<td>Textual three letters</td>';
+		echo '<td>Jan – Dec</td>';
+	echo '</tr>';
+
+	echo '<tr><td colspan="3"><h5>Year</h5></td></tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>YYYY</strong></td>';
+		echo '<td>Numeric, 4 digits</td>';
+		echo '<td>Eg., 1999, 2003</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>YY</strong></td>';
+		echo '<td>Numeric, 2 digits</td>';
+		echo '<td>Eg., 99, 03</td>';
+	echo '</tr>';
+
+	echo '<tr><td colspan="3"><h5>Time</h5></td></tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>a</strong></td>';
+		echo '<td width="300">am/pm Lowercase</td>';
+		echo '<td>am, pm</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>A</strong></td>';
+		echo '<td>AM/PM Uppercase</td>';
+		echo '<td>AM, PM</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>h</strong></td>';
+		echo '<td>Hour, 12-hour, without leading zeros</td>';
+		echo '<td>1–12</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>hh</strong></td>';
+		echo '<td>Hour, 12-hour, with leading zeros</td>';
+		echo '<td>01–12</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>H</strong></td>';
+		echo '<td>Hour, 24-hour, without leading zeros</td>';
+		echo '<td>0-23</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>HH</strong></td>';
+		echo '<td>Hour, 24-hour, with leading zeros</td>';
+		echo '<td>00-23</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>mm</strong></td>';
+		echo '<td>Minutes, with leading zeros</td>';
+		echo '<td>00-59</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>ss</strong></td>';
+		echo '<td>Seconds, with leading zeros</td>';
+		echo '<td>00-59</td>';
+	echo '</tr>';
+	echo '<tr>';
+		echo '<td align="center"><strong>zz</strong></td>';
+		echo '<td>Timezone abbreviation</td>';
+		echo '<td>Eg., EST, MDT ...</td>';
+	echo '</tr>';
+}
+
+function printPMSSettings($haveConfig) {
+	global $settings;
+	echo '<div class="wellbg">';
+		echo '<div class="wellheader">';
+			echo '<div class="dashboard-wellheader">';
+				echo '<h3><a id="pms">Plex Media Server &amp; Database Settings</a></h3>';
+			echo '</div>';
+		echo '</div>';
+		echo '<div class="control-group">';
+			echo '<label class="control-label" for="pmsIp">PMS IP Address</label>';
+			echo '<div class="controls">';
+				echo '<input id="pmsIp" name="pmsIp" type="text" placeholder="0.0.0.0" ' .
+					'class="input-xlarge" required=""';
+					if ($haveConfig) {
+						echo ' value="' . $settings->getPmsIp() . '"';
+					}
+					echo '>';
+				echo '<p class="help-block">';
+					echo 'Plex Media Server IP address, hostname or domain name';
+				echo '</p>';
+			echo '</div>';
+		echo '</div>';
+		echo '<div class="control-group">';
+			echo '<label class="control-label" for="pmsPort">PMS Web Port</label>';
+			echo '<div class="controls">';
+				echo '<input id="pmsPort" name="pmsPort" type="text" ' .
+					'placeholder="32400" class="input-mini" required="" value="';
+					if ($haveConfig) {
+						echo $settings->getPmsPort();
+					} else {
+						echo '32400';
+					}
+					echo '">';
+				echo '<p class="help-block">Plex Media Server\'s web port</p>';
+			echo '</div>';
+		echo '</div>';
+		echo '<div class="control-group">';
+			echo '<label class="control-label" for="plexWatchDb">plexWatch Database</label>';
+			echo '<div class="controls">';
+				echo '<input id="plexWatchDb" name="plexWatchDb" type="text" '.
+				'placeholder="/opt/plexWatch/plexWatch.db" class="input-xlarge" ' .
+				'required="" value="';
+					if ($haveConfig) {
+						echo $settings->getPlexWatchDb();
+					} else {
+						echo '/opt/plexWatch/plexWatch.db';
+					}
+					echo '">';
+				echo '<p class="help-block">File location of your plexWatch database.</p>';
+			echo '</div>';
+		echo '</div>';
+	echo '</div>';
+}
+
+function printPlexAuthSettings() {
+	echo '<div class="wellbg">';
+		echo '<div class="wellheader">';
+			echo '<div class="dashboard-wellheader">';
+				echo '<h3><a id="myplex">Plex.tv Authentication</a></h3>';
+			echo '</div>';
+		echo '</div>';
+		echo '<div class="control-group">';
+			echo '<p class="help-block">';
+				echo 'If you have enabled ';
+				echo '<a href="https://support.plex.tv/hc/en-us/articles/203815766-What-is-Plex-Home-">';
+				echo 'Plex Home</a> on your Plex Media Server, a ';
+				echo '<a href="https://plex.tv/users/sign_in">Plex.tv</a> username and ';
+				echo 'password are required in order to access your server\'s data.';
+			echo '</p>';
+			echo '<br>';
+			echo '<label class="control-label" for="plexUser">Username (optional)</label>';
+			echo '<div class="controls">';
+				echo '<input id="plexUser" name="plexUser" type="text" placeholder="" ' .
+					'class="input-xlarge">';
+			echo '</div>';
+		echo '</div>';
+		echo '<div class="control-group">';
+			echo '<label class="control-label" for="plexPass">Password (optional)</label>';
+			echo '<div class="controls">';
+				echo '<input id="plexPass" name="plexPass" type="password" ' .
+					'placeholder="" class="input-xlarge" value="">';
+			echo '</div>';
+		echo '</div>';
+	echo '</div>';
+}
+
+function printGroupingSettings($haveConfig) {
+	global $settings;
+	$globalGrouping = '';
+	$userGrouping = '';
+	$chartsGrouping = '';
+	if ($haveConfig) {
+		if ($settings->getGlobalGrouping()) {
+			$globalGrouping = ' checked';
+		}
+		if ($settings->getUserGrouping()) {
+			$userGrouping = ' checked';
+		}
+		if ($settings->getChartsGrouping()) {
+			$chartsGrouping = ' checked';
+		}
+	}
+	echo '<div class="wellbg">';
+		echo '<div class="wellheader">';
+			echo '<div class="dashboard-wellheader">';
+				echo '<h3><a id="grouping">Grouping Settings</a></h3>';
+			echo '</div>';
+		echo '</div>';
+		echo '<div class="control-group">';
+			echo '<label class="control-label" for="globalGrouping-0">' .
+				'Global History (optional)</label>';
+			echo '<div class="controls">';
+				echo '<label class="checkbox inline" for="globalGrouping-0">';
+					echo '<input type="checkbox" name="globalGrouping" ' .
+						'id="globalGrouping-0" value="yes"' . $globalGrouping .'>';
+					echo '<span class="help-block">Enable global history grouping</span>';
+				echo '</label>';
+				echo '<label class="control-label" for="userGrouping-0">' .
+					'User History (optional)</label>';
+				echo '<label class="checkbox inline" for="userGrouping-0">';
+					echo '<input type="checkbox" name="userGrouping" ' .
+						'id="userGrouping-0" value="yes"' . $userGrouping .'>';
+					echo '<span class="help-block">Enable user history grouping</span>';
+				echo '</label>';
+				echo '<label class="control-label" for="chartsGrouping-0">';
+					echo 'Charts (optional)';
+				echo '</label>';
+				echo '<label class="checkbox inline" for="chartsGrouping-0">';
+					echo '<input type="checkbox" name="chartsGrouping" ' .
+						'id="chartsGrouping-0" value="yes"' . $chartsGrouping. '>';
+					echo '<span class="help-block">Enable charts grouping</span>';
+				echo '</label>';
+			echo '</div>';
+		echo '</div>';
+	echo '</div>';
+}
+
+function printWelcomeModal() {
+	echo '<div id="welcomeModal" class="modal hide fade" tabindex="-1" '.
+		'role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">';
+		echo '<div class="modal-header">';
+			echo '<h2 id="myModalLabel">';
+				echo '<i class="icon-large icon-chevron-right icon-white"></i> ';
+				echo 'Get Started';
+			echo '</h2>';
+		echo '</div>';
+		echo '<div class="modal-body">';
+			echo '<img src="images/logo-plexWatch-welcome.png">';
+			echo '<h1>Welcome to plexWatch/Web</h1>';
+			echo '<p>PlexWatch/Web makes it easy to view in-depth historical ' .
+				'statistics and activity of your Plex Media Server. Let\'s get ' .
+				'started by checking for some requirements.</p>';
+			printServerSupport();
+			printPHPSupport();
+			printSQLiteSupport();
+			printCURLSupport();
+			printJSONSupport();
+			echo '<li>';
+				echo '<i class="icon icon-ok"></i> ';
+				echo 'Your server\'s timezone: <strong>';
+					echo '<span class="label label-warning">';
+						echo @date_default_timezone_get();
+					echo '</span>';
+				echo '</strong>';
+			echo '</li>';
+			echo '<br>';
+			echo '<p><h4>Note: </h4>Please ensure you have installed, configured ' .
+				'and tested <a href="https://github.com/ljunkie/plexWatch">plexWatch ' .
+				'v0.3.2</a> or above before continuing. If all requirements above are ' .
+				'green and the timezone shown matches your timezone you can move '.
+				'forward by filling in a few key configuration options now.</p>';
+			echo '<br>';
+		echo '</div>';
+		echo '<div class="modal-footer">';
+			echo '<button class="btn btn-primary pull-right" data-dismiss="modal" ' .
+				'aria-hidden="true">I\'m ready to go.</button>';
+		echo '</div>';
+	echo '</div>';
+}
+
+function printServerSupport() {
+	echo '<li>';
+		if (isset($_SERVER['SERVER_SOFTWARE'])) {
+				echo '<i class="icon icon-ok"></i> ';
+				echo 'Web Server: <strong>';
+					echo '<span class="label label-success">';
+						echo $_SERVER['SERVER_SOFTWARE'];
+					echo '</span>';
+				echo '</strong>';
+		} else {
+				echo '<i class="icon icon-warning-sign"></i> ';
+				echo 'Web Server: <strong>';
+					echo '<span class="label label-important">';
+						echo 'No information available';
+					echo '</span>';
+				echo '</strong>';
+		}
+	echo '</li>';
+}
+
+function printPHPSupport() {
+	echo '<li>';
+		if (defined('PHP_VERSION')) {
+			$minPHP = '5.3.3';
+			if (version_compare(PHP_VERSION, $minPHP, '>=')) {
+				echo '<i class="icon icon-ok"></i> ';
+				echo 'PHP Version: <strong>';
+					echo '<span class="label label-success">';
+						echo 'v' . PHP_VERSION;
+					echo '</span>';
+				echo '</strong>';
+			} else {
+				echo '<i class="icon icon-warning-sign"></i> ';
+				echo 'PHP Version: <strong>';
+					echo '<span class="label label-important">';
+						echo 'v' . PHP_VERSION . ' (Min: ' . $minPHP . ')';
+					echo '</span>';
+				echo '</strong>';
+			}
+		} else {
+			echo '<i class="icon icon-warning-sign"></i> ';
+			echo 'PHP Version: <strong>';
+				echo '<span class="label label-important">';
+					echo 'No information available';
+				echo '</span>';
+			echo '</strong>';
+		}
+	echo '</li>';
+}
+
+function printSQLiteSupport() {
+	echo '<li>';
+		$sqliteVersion = SQLite3::version();
+		if (!empty($sqliteVersion)) {
+			echo '<i class="icon icon-ok"></i> ';
+			echo 'PHP SQLite Support: <strong>';
+				echo '<span class="label label-success">';
+					echo 'v' . $sqliteVersion['versionString'];
+				echo '</span>';
+			echo '</strong>';
+		} else {
+			echo '<i class="icon icon-warning-sign"></i> ';
+			echo 'PHP SQLite Support: <strong>';
+				echo '<span class="label label-important">';
+					echo 'No information available';
+				echo '</span>';
+			echo '</strong>';
+		}
+	echo '</li>';
+}
+
+function printCURLSupport() {
+	echo '<li>';
+		$curlVersion = curl_version();
+		echo '<i class="icon icon-ok"></i> ';
+		echo 'PHP Curl Support: <strong>';
+			echo '<span class="label label-success">';
+				echo $curlVersion['version'];
+			echo '</span>';
+		echo '</strong>';
+		echo ' / SSL Support: <strong>';
+			echo '<span class="label label-success">';
+				echo $curlVersion['ssl_version'];
+			echo '</span>';
+		echo '</strong>';
+	echo '</li>';
+}
+
+function printJSONSupport() {
+	echo '<li>';
+		echo '<i class="icon icon-ok"></i> ';
+		echo 'PHP JSON Support: <strong>';
+		$json[] = '{"Yes":""}';
+		foreach ($json as $string) {
+			json_decode($string);
+			switch (json_last_error()) {
+				case JSON_ERROR_NONE:
+					echo '<span class="label label-success">';
+						echo 'Yes';
+					echo '</span>';
+					break;
+				case JSON_ERROR_DEPTH:
+					echo '<span class="label label-important">';
+						echo 'Maximum stack depth exceeded';
+					echo '</span>';
+					break;
+				case JSON_ERROR_STATE_MISMATCH:
+					echo '<span class="label label-important">';
+						echo 'Underflow or the modes mismatch';
+					echo '</span>';
+					break;
+				case JSON_ERROR_CTRL_CHAR:
+					echo '<span class="label label-important">';
+						echo 'Unexpected control character found';
+					echo '</span>';
+					break;
+				case JSON_ERROR_SYNTAX:
+					echo '<span class="label label-important">';
+						echo 'Syntax error, malformed JSON';
+					echo '</span>';
+					break;
+				case JSON_ERROR_UTF8:
+					echo '<span class="label label-important">';
+						echo 'Malformed UTF-8 characters, possibly ' .
+							'incorrectly encoded';
+					echo '</span>';
+					break;
+				default:
+					echo '<span class="label label-important">';
+						echo 'No (Unknown Error)';
+					echo '</span>';
+					break;
+			}
+		}
+		echo '</strong>';
+	echo '</li>';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>plexWatch</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<head>
+		<meta charset="utf-8">
+		<title>plexWatch</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
 
-    <!-- css -->
-    <link href="css/plexwatch.css" rel="stylesheet">
-	<link href="css/font-awesome.min.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-    </style>
-    
+		<!-- css -->
+		<link href="css/plexwatch.css" rel="stylesheet">
+		<link href="css/font-awesome.css" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+		<style type="text/css">
+			body {
+				padding-top: 60px;
+				padding-bottom: 40px;
+			}
+			.sidebar-nav {
+				padding: 9px 0;
+			}
+		</style>
 
-    <!-- touch icons -->
-    <link rel="shortcut icon" href="images/favicon.ico">
-    <link rel="apple-touch-icon" href="images/icon_iphone.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="images/icon_ipad.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="images/icon_iphone@2x.png">
-	<link rel="apple-touch-icon" sizes="144x144" href="images/icon_ipad@2x.png">
-	
-	
-  </head>
-
-  <body>
-
-  
-  
-	
-	<div class="container">
-		<div class="navbar navbar-fixed-top">
-			<div class="navbar-inner">
-				<a href="index.php"><div class="logo hidden-phone"></div></a>
+		<!-- touch icons -->
+		<link rel="shortcut icon" href="images/favicon.ico">
+		<link rel="apple-touch-icon" href="images/icon_iphone.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="images/icon_ipad.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="images/icon_iphone@2x.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="images/icon_ipad@2x.png">
+	</head>
+	<body>
+		<div class="container">
+			<div class="navbar navbar-fixed-top">
+				<div class="navbar-inner">
+					<a href="index.php"><div class="logo hidden-phone"></div></a>
 				<ul class="nav">
-					
-					<li class="active"><a href="index.php"><i class="icon-2x icon-home icon-white" data-toggle="tooltip" data-placement="bottom" title="Home" id="home"></i></a></li>
-					<li><a href="history.php"><i class="icon-2x icon-calendar icon-white" data-toggle="tooltip" data-placement="bottom" title="History" id="history"></i></a></li>
-					<li><a href="stats.php"><i class="icon-2x icon-tasks icon-white" data-toggle="tooltip" data-placement="bottom" title="Stats" id="stats"></i></a></li>
-					<li><a href="users.php"><i class="icon-2x icon-group icon-white" data-toggle="tooltip" data-placement="bottom" title="Users" id="users"></i></a></li>
-					<li><a href="charts.php"><i class="icon-2x icon-bar-chart icon-white" data-toggle="tooltip" data-placement="bottom" title="Charts" id="charts"></i></a></li>
-					<li><a href="settings.php"><i class="icon-2x icon-wrench icon-white" data-toggle="tooltip" data-placement="bottom" title="Settings" id="settings"></i></a></li>
-					<li><a href="index.php?logout=1"><i class="icon-2x icon-remove icon-white" data-toggle="tooltip" data-placement="bottom" title="Logout" id="Logout"></i></a></li>
+					<li><a href="index.php"><i class="fa fa-home fa-2x" data-toggle="tooltip" data-placement="bottom" title="Home" id="home"></i></a></li>
+					<li><a href="history.php"><i class="fa fa-history fa-2x" data-toggle="tooltip" data-placement="bottom" title="History" id="history"></i></a></li>
+					<li><a href="users.php"><i class="fa fa-users fa-2x" data-toggle="tooltip" data-placement="bottom" title="Users" id="users"></i></a></li>
+					<li><a href="stats.php"><i class="fa fa-area-chart fa-2x" data-toggle="tooltip" data-placement="bottom" title="Stats" id="stats"></i></a></li>
+					<li><a href="charts.php"><i class="fa fa-bar-chart fa-2x" data-toggle="tooltip" data-placement="bottom" title="Charts" id="charts"></i></a></li>
+					<li class="active"><a href="settings.php"><i class="fa fa-cogs fa-2x" data-toggle="tooltip" data-placement="bottom" title="Settings" id="settings"></i></a></li>
 				</ul>
-				
+				</div>
 			</div>
 		</div>
-    </div>
-	
-	<div class="clear"></div>
-	
-	<div class="container">
-		<div class='row'>	
-			<div class='span12'>
-				<div class='wellheader'>
-					<div class='dashboard-wellheader-no-chevron'>
-						<h2><i class="icon-large icon-wrench icon-white"></i> Settings</h2>
+		<div class="clear"></div>
+		<div class="container">
+			<div class="row">
+				<div class="span12">
+					<div class="wellheader-bg">
+						<div class="dashboard-wellheader-no-chevron">
+							<h2><i class="fa fa-cogs"></i> Settings</h2>
+						</div>
 					</div>
-				</div>	
-				
-			
-				<?php
-
-				$guisettingsFile = "config/config.php";
-				if (file_exists($guisettingsFile)) { 
-					require_once(dirname(__FILE__) . '/config/config.php');
-				
-					// check for a successful form post  
-					if (isset($_GET['s'])) {
-						echo "<div class=\"alert alert-warning alert-dismissable\">".$_GET['s']."";  
-						echo "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\"><i class=\"icon icon-remove-circle\"></i></button></div>";
-					// check for a form error  
-					}elseif (isset($_GET['e'])) {
-						echo "<div class=\"alert alert-warning alert-dismissable\">".$_GET['e']."";
-						echo "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\"><i class=\"icon icon-remove-circle\"></i></button></div>";
-					}
-				?>
-
-				
-					<div class="row-fluid">
-						
-					</div>	
-					<div class="row-fluid">
-					<div class='span3'>
-						<ul class="nav nav-list">
-							
-							<li class="active"><a href="#info">General</a></li>
-							<li><a href="#pms">PMS & Database</a></li>
-							<li ><a href="#myplex">Plex Authentication</a></li>
-							<li ><a href="#grouping">Grouping</a></li>	
-						</ul>
+					<div class="wellbg">
+						<?php
+						if (!class_exists('SQLite3')) {
+							$error_msg = 'php5-sqlite is not installed. Please install this ' .
+								'requirement and restart your webserver before continuing.';
+							echo '<div class="alert alert-warning">' . $error_msg . '</div>';
+							trigger_error($error_msg, E_USER_ERROR);
+						}
+						// Check for a successful form post
+						$errorStart = '<div class="alert alert-warning alert-dismissable">';
+						$errorEnd = '<button type="button" class="close" ' .
+									'data-dismiss="alert" aria-hidden="true"><i class="icon ' .
+									'icon-remove-circle"></i></button></div>';
+						if (isset($_GET['s'])) {
+							$error = filter_input(INPUT_GET, 's', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+							echo $errorStart . $error . $errorEnd;
+						} elseif (isset($_GET['e'])) {
+							// check for a form error
+							$error = filter_input(INPUT_GET, 'e', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+							echo $errorStart . $error . $errorEnd;
+						}
+						printSettings();
+						if (!($settings) && !isset($_GET['e'])) {
+							printWelcomeModal();
+						}
+						?>
 					</div>
-					
-					<div class="span9">
-					<form action="includes/process_settings.php" method="POST">
-						<fieldset>
-						<div class="wellbg">
-							<div class="wellheader">
-								<div class="dashboard-wellheader">
-									<h3><a id="info">Version Information</a></h3>
-								</div>
-							</div>
-
-							<div class="settings-general-info">
-								
-								<ul>
-									<li>plexWatch/Web Version: <strong>v1.5.4.2</strong></li>	
-								
-									<?php
-									    $db = dbconnect(); 	
-										$plexWatchVersion = $db->querySingle("SELECT version FROM config ");
-									?>
-									<li>plexWatch Version: <strong>v<?php echo $plexWatchVersion ?></strong></li>
-
-								</ul>
-							</div>
-						</div>
-						<div class="wellbg">
-							<div class="wellheader">
-								<div class="dashboard-wellheader">
-									<h3><a id="info">General</a></h3>
-								</div>
-							</div>
-
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="dateFormat">Date Format</label>
-							  <div class="controls">
-								<input id="dateFormat" name="dateFormat" type="text" placeholder="m/d/y" class="input-mini" required="" value="<?php echo $plexWatch['dateFormat'] ?>">
-								<p class="help-block">The date display format plexWatch/Web should use. <a href="#dateTimeOptionsModal" data-toggle="modal">Date & Time format options</a></p>
-							  </div>
-							</div>
-
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="timeFormat">Time Format</label>
-							  <div class="controls">
-								<input id="timeFormat" name="timeFormat" type="text" placeholder="g:i a" class="input-mini" required="" value="<?php echo $plexWatch['timeFormat'] ?>">
-								<p class="help-block">The time display format plexWatch/Web should use. <a href="#dateTimeOptionsModal" data-toggle="modal">Date & Time format options</a></p>
-							  </div>
-							</div>
-
-						</div>
-
-						<div id="dateTimeOptionsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="dateTimeOptionsModal" aria-hidden="true">
-						<div class="modal-header">	
-	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon icon-remove"></i></button>		
-	<h3 id="myModalLabel">Date & Time Format Options</h3>
-</div>
-								
-<div class="modal-body">
-									
-	<div class="span12">
-		
-	
-		<table>
-
-			<tbody>
-
-				<tr><td><h5>Day</h5></td></tr>
-				<tr><td align="center"><strong>d</strong></td><td width="300">Numeric, with leading zeros</td><td>01 to 31</td></tr>
-				<tr><td align="center"><strong>j</strong></td><td>Numeric, without leading zeros</td><td>1 to 31</td></tr>
-				<tr><td align="center"><strong>S</strong></td><td>The English suffix for the day of the month</td><td>st, nd or th in the 1st, 2nd or 15th.</td></tr>
-				
-				<tr><td><h5>Month</h5></td></tr>
-				<tr><td align="center"><strong>m</strong></td><td>Numeric, with leading zeros</td><td>01 to 31</td></tr>
-				<tr><td align="center"><strong>n</strong></td><td>Numeric, without leading zeros</td><td>1 to 31</td></tr>
-				<tr><td align="center"><strong>F</strong></td><td>Textual full</td><td>January – December</td></tr>
-				<tr><td align="center"><strong>M</strong></td><td>Textual three letters</td><td>Jan – Dec</td></tr>
-				
-				<tr><td><h5>Year</h5></td></tr>
-				<tr><td align="center"><strong>Y</strong></td><td>Numeric, 4 digits</td><td>Eg., 1999, 2003</td></tr>
-				<tr><td align="center"><strong>y</strong></td><td>Numeric, 2 digits</td><td>Eg., 99, 03</td></tr>
-
-				<tr><td><h5>Time</h5></td></tr>
-				<tr><td align="center"><strong>a</strong></td><td width="300">am/pm Lowercase</td><td>am, pm</td></tr>
-				<tr><td align="center"><strong>A</strong></td><td>AM/PM Uppercase</td><td>AM, PM</td></tr>
-				<tr><td align="center"><strong>g</strong></td><td>Hour, 12-hour, without leading zeros</td><td>1–12</td></tr>
-				<tr><td align="center"><strong>h</strong></td><td>Hour, 12-hour, with leading zeros</td><td>01–12</td></tr>
-				<tr><td align="center"><strong>G</strong></td><td>Hour, 24-hour, without leading zeros</td><td>0-23</td></tr>
-				<tr><td align="center"><strong>H</strong></td><td>Hour, 24-hour, with leading zeros</td><td>00-23</td></tr>
-				<tr><td align="center"><strong>i</strong></td><td>Minutes, with leading zeros</td><td>00-59</td></tr>
-				<tr><td align="center"><strong>s</strong></td><td>Seconds, with leading zeros</td><td>00-59</td></tr>
-				<tr><td align="center"><strong>T</strong></td><td>Timezone abbreviation</td><td>Eg., EST, MDT ...</td></tr>
-
-			</tbody>
-			
-		</table>
-																		
-	</div>
-	
-</div>
-										  
-<div class="modal-footer">
-
-</div>
-</div>
-
-						<div class='wellbg'>
-							<div class='wellheader'>
-								<div class='dashboard-wellheader'>
-								<h3><a id="pms">Plex Media Server & Database Settings</a></h3>
-								</div>
-							</div>
-						
-
-							
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="pmsIp">PMS IP Address</label>
-							  <div class="controls">
-								<input id="pmsIp" name="pmsIp" type="text" placeholder="0.0.0.0" class="input-xlarge" required="" value="<?php echo $plexWatch['pmsIp'] ?>">
-								<p class="help-block">Plex Media Server IP address, hostname or domain name</p>
-							  </div>
-							</div>
-
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="pmsHttpPort">PMS Web Port</label>
-							  <div class="controls">
-								<input id="pmsHttpPort" name="pmsHttpPort" type="text" placeholder="32400" class="input-small" required="" value="<?php echo $plexWatch['pmsHttpPort'] ?>">
-								<p class="help-block">Plex Media Server's web port</p>
-							  </div>
-							</div>
-
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="pmsHttpsPort">PMS Secure Web Port</label>
-							  <div class="controls">
-								<input id="pmsHttpsPort" name="pmsHttpsPort" type="text" placeholder="32443" class="input-small" required="" value="<?php echo $plexWatch['pmsHttpsPort'] ?>">
-								<p class="help-block">Plex Media Server's secure web port</p>
-							  </div>
-							</div>
-							
-							
-							<?php 	
-							
-							if ($plexWatch['https'] == "no" ) {
-								$https = '';
-							}else if ($plexWatch['https'] == "yes" ) {
-								$https = "checked='yes'";
-							}
-							?>
-							
-							<!-- Multiple Checkboxes (inline) -->
-							<div class="control-group">
-							  <label class="control-label" for="https">Use HTTPS (optional)</label>
-							  <div class="controls">
-								<label class="checkbox inline" for="https-0">
-								  <input type="checkbox" name="https" id="https-0" value="yes" <?php echo $https ?>>
-								  <p class="help-block">Use Plex Media Server's secure web port</p>
-								</label>
-							  </div>
-							</div>
-
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="plexWatchDb">plexWatch Database</label>
-							  <div class="controls">
-								  <input id="plexWatchDb" name="plexWatchDb" type="text" placeholder="/opt/plexWatch/plexWatch.db" class="input-xlarge" required="" value="<?php echo $plexWatch['plexWatchDb'] ?>">
-								  <p class="help-block">File location of your plexWatch database.</p>
-							  </div>
-							</div>
-							
-						</div>	
-							
-						<div class='wellbg'>
-						<div class='wellheader'>
-							<div class='dashboard-wellheader'>
-							<h3><a id="myplex">Plex Authentication</a></h3>
-							</div>
-						</div>
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="myPlexUser">Username (optional)</label>
-							  <div class="controls">
-								  <input id="myPlexUser" name="myPlexUser" type="text" placeholder="" class="input-xlarge" value="<?php echo $plexWatch['myPlexUser'] ?>">
-								  <p class="help-block">If you would like to access plexWatch/Web on other networks, a <a href="https://plex.tv/users/sign_in">Plex.tv</a> username and password are required.</p>
-							  </div>
-							</div>
-							
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="myPlexPass">Password (optional)</label>
-							  <div class="controls">
-								  <input id="myPlexPass" name="myPlexPass" type="password" placeholder="" class="input-xlarge" value="<?php echo $plexWatch['myPlexPass'] ?>">
-								  <p class="help-block">If you would like to access plexWatch/Web on other networks, a <a href="https://plex.tv/users/sign_in">Plex.tv</a> username and password are required.</p>
-							  </div>
-							</div>
-						</div>
-
-						<div class='wellbg'>	
-					
-							<div class='wellheader'>
-								<div class='dashboard-wellheader'>
-								<h3><a id="grouping">Grouping Settings</a></h3>
-								</div>
-							</div>
-					
-											
-						
-							<?php 	
-							
-							
-							if ($plexWatch['globalHistoryGrouping'] == "no" ) {
-								$globalHistoryGrouping = '';
-							}else if ($plexWatch['globalHistoryGrouping'] == "yes" ) {
-								$globalHistoryGrouping = "checked='yes'";
-							}
-							
-							
-							if ($plexWatch['userHistoryGrouping'] == "no" ) {
-								$userHistoryGrouping = '';
-							}else if ($plexWatch['userHistoryGrouping'] == "yes" ) {
-								$userHistoryGrouping = "checked='yes'";
-							}
-							
-							
-							if ($plexWatch['chartsGrouping'] == "no" ) {
-								$chartsGrouping = '';
-							}else if ($plexWatch['chartsGrouping'] == "yes" ) {
-								$chartsGrouping = "checked='yes'";
-							}
-
-							?>
-							 
-							<!-- Multiple Checkboxes (inline) -->
-							<div class="control-group">
-							  <label class="control-label" for="globalHistoryGrouping">Global History (optional)</label>
-							  <div class="controls">
-								<label class="checkbox inline" for="globalHistoryGrouping">
-								  <input type="checkbox" name="globalHistoryGrouping" id="globalHistoryGrouping-0" value="yes" <?php echo $globalHistoryGrouping; ?>>
-								  <p class="help-block">Enable global history grouping</p>
-								</label>
-							<label class="control-label" for="userHistoryGrouping">User History (optional)</label>
-								<label class="checkbox inline" for="userHistoryGrouping">
-								  <input type="checkbox" name="userHistoryGrouping" id="userHistoryGrouping-0" value="yes" <?php echo $userHistoryGrouping; ?>>
-								  <p class="help-block">Enable user history grouping</p>
-								</label>
-							<label class="control-label" for="chartsGrouping">Charts (optional)</label>	
-								<label class="checkbox inline" for="chartsGrouping">
-								  <input type="checkbox" name="chartsGrouping" id="chartsGrouping-0" value="yes" <?php echo $chartsGrouping; ?>>
-								  <p class="help-block">Enable charts grouping</p>
-								</label>
-							</div>
-							
-						</div>
-						</div>
-						
-					
-					
-					
-					
-					<div class="form-actions">
-						<!-- Button -->
-						<div class="control-group">
-						  <label class="control-label" for="submit"></label>
-						  <div class="controls">
-							  <div id="friendlyName">
-								<button id="submit" name="submit" class="btn btn-medium btn-primary" value="save">Save</button>
-								<a href="index.php"><button type="button" class="btn btn-medium btn-cancel">Cancel</button></a>
-								</div>
-						  </div>
-						</div>
-						
-					</div>
-					</fieldset>
-					</form>
-						
-				
-					
-					
-			</div>
-			
-			
-		</div>
-	</div>
-			
-			
-				
-				
-				<?php
-				}else{
-					if(!class_exists('SQLite3'))
-					die("<div class=\"alert alert-warning \">php5-sqlite is not installed. Please install this requirement and restart your webserver before continuing.</div>");
-				?>
-			
-				<div class="wellbg">
-					<div class="row-fluid">
-						
-					</div>	
-					<div class="row-fluid">
-					<div class='span3'>
-						<ul class="nav nav-list">
-							
-							<li class="active"><a href="#info">General</a></li>
-							<li><a href="#pms">PMS & Database</a></li>
-							<li ><a href="#myplex">Plex Authentication</a></li>
-							<li ><a href="#grouping">Grouping</a></li>	
-						</ul>
-					</div>
-					
-					<div class="span9">
-					<form action="includes/process_settings.php" method="POST">
-						<fieldset>
-						
-						<div class="wellbg">
-							<div class="wellheader">
-								<div class="dashboard-wellheader">
-									<h3><a id="info">General</a></h3>
-								</div>
-							</div>
-
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="dateFormat">Date Format</label>
-							  <div class="controls">
-								<input id="dateFormat" name="dateFormat" type="text" placeholder="m/d/y" class="input-mini" required="" value="m/d/Y">
-								<p class="help-block">The date display format plexWatch/Web should use. <a href="#dateTimeOptionsModal" data-toggle="modal">Date & Time format options</a></p>
-							  </div>
-							</div>
-
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="timeFormat">Time Format</label>
-							  <div class="controls">
-								<input id="timeFormat" name="timeFormat" type="text" placeholder="g:i a" class="input-mini" required="" value="g:i a">
-								<p class="help-block">The time display format plexWatch/Web should use. <a href="#dateTimeOptionsModal" data-toggle="modal">Date & Time format options</a></p>
-							  </div>
-							</div>
-
-						</div>
-
-						<div id="dateTimeOptionsModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="dateTimeOptionsModal" aria-hidden="true">
-						<div class="modal-header">	
-	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon icon-remove"></i></button>		
-	<h3 id="myModalLabel">Date & Time Format Options</h3>
-</div>
-								
-<div class="modal-body">
-									
-	<div class="span12">
-		
-	
-		<table>
-
-			<tbody>
-
-				<tr><td><h5>Day</h5></td></tr>
-				<tr><td align="center"><strong>d</strong></td><td width="300">Numeric, with leading zeros</td><td>01 to 31</td></tr>
-				<tr><td align="center"><strong>j</strong></td><td>Numeric, without leading zeros</td><td>1 to 31</td></tr>
-				<tr><td align="center"><strong>S</strong></td><td>The English suffix for the day of the month</td><td>st, nd or th in the 1st, 2nd or 15th.</td></tr>
-				
-				<tr><td><h5>Month</h5></td></tr>
-				<tr><td align="center"><strong>m</strong></td><td>Numeric, with leading zeros</td><td>01 to 31</td></tr>
-				<tr><td align="center"><strong>n</strong></td><td>Numeric, without leading zeros</td><td>1 to 31</td></tr>
-				<tr><td align="center"><strong>F</strong></td><td>Textual full</td><td>January – December</td></tr>
-				<tr><td align="center"><strong>M</strong></td><td>Textual three letters</td><td>Jan – Dec</td></tr>
-				
-				<tr><td><h5>Year</h5></td></tr>
-				<tr><td align="center"><strong>Y</strong></td><td>Numeric, 4 digits</td><td>Eg., 1999, 2003</td></tr>
-				<tr><td align="center"><strong>y</strong></td><td>Numeric, 2 digits</td><td>Eg., 99, 03</td></tr>
-
-				<tr><td><h5>Time</h5></td></tr>
-				<tr><td align="center"><strong>a</strong></td><td width="300">am/pm Lowercase</td><td>am, pm</td></tr>
-				<tr><td align="center"><strong>A</strong></td><td>AM/PM Uppercase</td><td>AM, PM</td></tr>
-				<tr><td align="center"><strong>g</strong></td><td>Hour, 12-hour, without leading zeros</td><td>1–12</td></tr>
-				<tr><td align="center"><strong>h</strong></td><td>Hour, 12-hour, with leading zeros</td><td>01–12</td></tr>
-				<tr><td align="center"><strong>G</strong></td><td>Hour, 24-hour, without leading zeros</td><td>0-23</td></tr>
-				<tr><td align="center"><strong>H</strong></td><td>Hour, 24-hour, with leading zeros</td><td>00-23</td></tr>
-				<tr><td align="center"><strong>i</strong></td><td>Minutes, with leading zeros</td><td>00-59</td></tr>
-				<tr><td align="center"><strong>s</strong></td><td>Seconds, with leading zeros</td><td>00-59</td></tr>
-				<tr><td align="center"><strong>T</strong></td><td>Timezone abbreviation</td><td>Eg., EST, MDT ...</td></tr>
-
-			</tbody>
-			
-		</table>
-																		
-	</div>
-	
-</div>
-										  
-<div class="modal-footer">
-
-</div>
-</div>
-						
-						<div class='wellbg'>
-							<div class='wellheader'>
-								<div class='dashboard-wellheader'>
-								<h3><a id="pms">Plex Media Server & Database Settings</a></h3>
-								</div>
-							</div>
-						
-						
-							<form action="includes/process_settings.php" method="POST">
-							
-							
-							
-							<fieldset>
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="pmsIp">PMS IP Address</label>
-							  <div class="controls">
-								<input id="pmsIp" name="pmsIp" type="text" placeholder="0.0.0.0" class="input-xlarge" required="" >
-								<p class="help-block">Plex Media Server IP address, hostname or domain name</p>
-							  </div>
-							</div>
-
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="pmsHttpPort">PMS Web Port</label>
-							  <div class="controls">
-								<input id="pmsHttpPort" name="pmsHttpPort" type="text" placeholder="32400" class="input-small" required="" >
-								<p class="help-block">Plex Media Server's web port</p>
-							  </div>
-							</div>
-
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="pmsHttpsPort">PMS Secure Web Port</label>
-							  <div class="controls">
-								<input id="pmsHttpsPort" name="pmsHttpsPort" type="text" placeholder="32443" class="input-small" required="" >
-								<p class="help-block">Plex Media Server's secure web port</p>
-							  </div>
-							</div>
-							
-							
-							
-							
-							<!-- Multiple Checkboxes (inline) -->
-							<div class="control-group">
-							  <label class="control-label" for="https">Use HTTPS (optional)</label>
-							  <div class="controls">
-								<label class="checkbox inline" for="https-0">
-								  <input type="checkbox" name="https" id="https-0" value="yes" >
-								  <p class="help-block">Use Plex Media Server's secure web port</p>
-								</label>
-							  </div>
-							</div>
-
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="plexWatchDb">plexWatch Database</label>
-							  <div class="controls">
-								  <input id="plexWatchDb" name="plexWatchDb" type="text" placeholder="/opt/plexWatch/plexWatch.db" class="input-xlarge" required="" >
-								  <p class="help-block">File location of your plexWatch database.</p>
-							  </div>
-							</div>
-							
-						</div>	
-							
-						<div class='wellbg'>
-						<div class='wellheader'>
-							<div class='dashboard-wellheader'>
-							<h3><a id="myplex">Plex Authentication</a></h3>
-							</div>
-						</div>
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="myPlexUser">Username (optional)</label>
-							  <div class="controls">
-								  <input id="myPlexUser" name="myPlexUser" type="text" placeholder="" class="input-xlarge" >
-								  <p class="help-block">If you would like to access plexWatch/Web on other networks, a <a href="https://plex.tv/users/sign_in">Plex.tv</a> username and password are required.</p>
-							  </div>
-							</div>
-							
-							<!-- Text input-->
-							<div class="control-group">
-							  <label class="control-label" for="myPlexPass">Password (optional)</label>
-							  <div class="controls">
-								  <input id="myPlexPass" name="myPlexPass" type="password" placeholder="" class="input-xlarge" >
-								  <p class="help-block">If you would like to access plexWatch/Web on other networks, a <a href="https://plex.tv/users/sign_in">Plex.tv</a> username and password are required.</p>
-							  </div>
-							</div>
-						</div>
-
-						<div class='wellbg'>	
-					
-							<div class='wellheader'>
-								<div class='dashboard-wellheader'>
-								<h3><a id="grouping">Grouping Settings</a></h3>
-								</div>
-							</div>
-					
-											
-						
-							
-							 
-							<!-- Multiple Checkboxes (inline) -->
-							<div class="control-group">
-							  <label class="control-label" for="globalHistoryGrouping">Global History (optional)</label>
-							  <div class="controls">
-								<label class="checkbox inline" for="globalHistoryGrouping">
-								  <input type="checkbox" name="globalHistoryGrouping" id="globalHistoryGrouping-0" value="yes" >
-								  <p class="help-block">Enable global history grouping</p>
-								</label>
-							<label class="control-label" for="userHistoryGrouping">User History (optional)</label>
-								<label class="checkbox inline" for="userHistoryGrouping">
-								  <input type="checkbox" name="userHistoryGrouping" id="userHistoryGrouping-0" value="yes" >
-								  <p class="help-block">Enable user history grouping</p>
-								</label>
-							<label class="control-label" for="chartsGrouping">Charts (optional)</label>	
-								<label class="checkbox inline" for="chartsGrouping">
-								  <input type="checkbox" name="chartsGrouping" id="chartsGrouping-0" value="yes" >
-								  <p class="help-block">Enable charts grouping</p>
-								</label>
-							</div>
-							
-						</div>
-						</div>
-						
-					
-					
-					
-					
-					<div class="form-actions">
-						<!-- Button -->
-						<div class="control-group">
-						  <label class="control-label" for="submit"></label>
-						  <div class="controls">
-							  <div id="friendlyName">
-								<button id="submit" name="submit" class="btn btn-medium btn-primary" value="save">Save</button>
-								<a href="index.php"><button type="button" class="btn btn-medium btn-cancel">Cancel</button></a>
-								</div>
-						  </div>
-						</div>
-						
-					</div>
-					</fieldset>
-					</form>
-						
 				</div>
-			<?php
-			}
-			
-			if (!file_exists($guisettingsFile)) {
-				
-			?>
-			
-				<div id="welcomeModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-				  <div class="modal-header">
-					
-					<h2 id="myModalLabel"><i class="icon-large icon-chevron-right icon-white"></i> Get Started</h2>
-				  </div>
-				  <div class="modal-body">
-					<img src="images/logo-plexWatch-welcome.png"></img>
-					<h1>Welcome to plexWatch/Web</h1>
-					
-					<p>PlexWatch/Web makes it easy to view in-depth historical statistics and activity of your Plex Media Server. Let's get started by checking for some requirements.</p>
-					<?php
-						$sqliteVer = SQLite3::version();
-						if (isset($_SERVER['SERVER_SOFTWARE'])) {
-							echo "<li><i class='icon icon-ok'></i> Web Server: <strong><span class='label label-success'>".$_SERVER['SERVER_SOFTWARE']."</strong></span></li>";
-						}else{
-							echo "<li><i class='icon icon-warning-sign'></i> Web Server: <strong><span class='label label-important'>No information available</strong></span></li>";
-						}
-						$phpVersion = phpversion();
-						if (!empty($phpVersion)) {
-							echo "<li><i class='icon icon-ok'></i> PHP Version: <strong><span class='label label-success'>v".phpversion()."</strong></span></li>";
-						}else{
-							echo "<li><i class='icon icon-warning-sign'></i> PHP Version: <strong><span class='label label-important'>No information available</strong></span></li>";
-						}
-						$sqliteVersion = SQLite3::version();
-						if (!empty($sqliteVersion)) {
-							echo "<li><i class='icon icon-ok'></i> PHP SQLite Support: <strong><span class='label label-success'>v".$sqliteVersion['versionString']."</strong></span></li>";
-						}else{
-							echo "<li><i class='icon icon-warning-sign'></i> PHP SQLite Support: <strong><span class='label label-important'>No information available</strong></span></li>";
-						}
-						
-						$curlVersion = curl_version();
-						echo "<li><i class='icon icon-ok'></i> PHP Curl Support: <strong><span class='label label-success'>" .$curlVersion['version']. "</span></strong>  / SSL Support: <strong><span class='label label-success'>" .$curlVersion['ssl_version']."</strong></span></li>";	
-						
-						
-						$json[] = '{"Yes":""}';
-						foreach ($json as $string) {
-							
-							json_decode($string);
-
-							switch (json_last_error()) {
-								case JSON_ERROR_NONE:
-									echo "<li><i class='icon icon-ok'></i> PHP JSON Support: <strong><span class='label label-success'>Yes</span></strong></li>";	
-									break;
-								case JSON_ERROR_DEPTH:
-									echo "<li><i class='icon icon-ok'></i> PHP JSON Support: <strong><span class='label label-important'>Maximum stack depth exceeded</span></strong></li>";
-									break;
-								case JSON_ERROR_STATE_MISMATCH:
-									echo "<li><i class='icon icon-ok'></i> PHP JSON Support: <strong><span class='label label-important'>Underflow or the modes mismatch</span></strong></li>";
-									break;
-								case JSON_ERROR_CTRL_CHAR:
-									echo "<li><i class='icon icon-ok'></i> PHP JSON Support: <strong><span class='label label-important'>Unexpected control character found</span></strong></li>";
-									break;
-								case JSON_ERROR_SYNTAX:
-									echo "<li><i class='icon icon-ok'></i> PHP JSON Support: <strong><span class='label label-important'>Syntax error, malformed JSON</span></strong></li>";
-									break;
-								case JSON_ERROR_UTF8:
-									echo "<li><i class='icon icon-ok'></i> PHP JSON Support: <strong><span class='label label-important'>Malformed UTF-8 characters, possibly incorrectly encoded</span></strong></li>";
-									break;
-								default:
-									echo "<li><i class='icon icon-ok'></i> PHP JSON Support: <strong><span class='label label-important'>No (Unknown Error)</span></strong></li>";
-									break;
-							}
-						}
-						
-						
-						
-						echo "<li><i class='icon icon-ok'></i> Your server's timezone: <strong><span class='label label-warning'>".@date_default_timezone_get()."</strong></span></li>";	
-						
-						
-						
-					?>	
-
-						<br>
-						<p><h4>Note: </h4>Please ensure you have installed, configured and tested <a href="https://github.com/ljunkie/plexWatch">plexWatch v0.1.6</a> or above before continuing. If all requirements above are green and the timezone shown matches your timezone you can move forward by filling in a few key configuration options now.</p>
-						<br>
-
-				  </div>
-				  
-				  <div class="modal-footer">
-						<button class="btn btn-primary pull-right" data-dismiss="modal" aria-hidden="true">I'm ready to go.</button>
-				  </div>
-				</div>
-			<?php
-			}
-			?>
-			
 			</div>
-				
-		</div>			
-			
-			
+			<footer></footer>
+		</div><!--/.container-->
 
-		<footer>
-		
-		</footer>
-		
-    </div><!--/.fluid-container-->
-    
-    <!-- javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery-2.0.3.js"></script>
-	<script src="js/bootstrap.js"></script>
-	
-	<script>
-	$(document).ready(function() {
-		$('#home').tooltip();
-	});
-	$(document).ready(function() {
-		$('#history').tooltip();
-	});
-	$(document).ready(function() {
-		$('#users').tooltip();
-	});
-	$(document).ready(function() {
-		$('#charts').tooltip();
-	});
-	$(document).ready(function() {
-		$('#settings').tooltip();
-	});
-	$(document).ready(function() {
-		$('#stats').tooltip();
-	});
-	</script>
-	
-	<script>
-	$('#welcomeModal').modal('show')
-	</script>
+		<!-- javascript
+		================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script src="js/jquery-2.0.3.js"></script>
+		<script src="js/bootstrap.js"></script>
+		<script>
+			$(document).ready(function() {
+				$('#home').tooltip();
+			});
+			$(document).ready(function() {
+				$('#history').tooltip();
+			});
+			$(document).ready(function() {
+				$('#users').tooltip();
+			});
+			$(document).ready(function() {
+				$('#charts').tooltip();
+			});
+			$(document).ready(function() {
+				$('#settings').tooltip();
+			});
+			$(document).ready(function() {
+				$('#stats').tooltip();
+			});
+		</script>
+		<script>
+			$('#welcomeModal').modal('show');
+		</script>
+		<script>
+			$('#dateTimeModal').modal('show');
+		</script>
+		<script>
+			$('#actionSubmit').on('click', function (e) {
+				e.preventDefault();
+				alert($('#groupedHistory').serialize());
+			});
 
-	<script>
-	$('#dateTimeModal').modal('show')
-	</script>
-	
-	<script>
-	$('#actionSubmit').on('click', function (e) {
-		e.preventDefault();
-		alert($('#groupedHistory').serialize());
-	});
-
-	$('.btn-group').button()
-	</script>
-
-	
-	<script>
-	window.setTimeout(function() {
-    $(".alert-warning").fadeTo(500, 0).slideUp(500, function(){
-        $(this).remove(); 
-    });
-	}, 5000);
-	</script>
-	
-	
-  </body>
+			$('.btn-group').button();
+		</script>
+		<script>
+			window.setTimeout(function() {
+				$(".alert-warning").fadeTo(500, 0).slideUp(500, function() {
+					$(this).remove();
+				});
+			}, 5000);
+		</script>
+	</body>
 </html>

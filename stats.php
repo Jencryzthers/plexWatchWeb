@@ -1,212 +1,205 @@
 <?php include("password_protect.php"); ?>
-
+<?php
+require_once(dirname(__FILE__) . '/includes/functions.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>plexWatch</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<head>
+		<meta charset="utf-8">
+		<title>plexWatch</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
 
-    <!-- Le styles -->
-    <link href="css/plexwatch.css" rel="stylesheet">
-	<link href="css/plexwatch-tables.css" rel="stylesheet">
-	<link href="css/font-awesome.min.css" rel="stylesheet" >
-	<link href="css/xcharts.css" rel="stylesheet" >
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-    </style>
+		<!-- Le styles -->
+		<link href="css/plexwatch.css" rel="stylesheet">
+		<link href="css/font-awesome.css" rel="stylesheet" >
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+		<link href="css/plexwatch-tables.css" rel="stylesheet">
+		<link href="css/xcharts.css" rel="stylesheet" >
+		<style type="text/css">
+			body {
+				padding-top: 60px;
+				padding-bottom: 40px;
+			}
+			.sidebar-nav {
+				padding: 9px 0;
+			}
+		</style>
 
-    <!-- touch icons -->
-    <link rel="shortcut icon" href="images/favicon.ico">
-    <link rel="apple-touch-icon" href="images/icon_iphone.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="images/icon_ipad.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="images/icon_iphone@2x.png">
-	<link rel="apple-touch-icon" sizes="144x144" href="images/icon_ipad@2x.png">
-  </head>
-
-  <body>
-
-	
-  
-	<div class="container">
-		<div class="navbar navbar-fixed-top">
-			<div class="navbar-inner">
-				<a href="index.php"><div class="logo hidden-phone"></div></a>
-				<ul class="nav">
-					
-					<li class="active"><a href="index.php"><i class="icon-2x icon-home icon-white" data-toggle="tooltip" data-placement="bottom" title="Home" id="home"></i></a></li>
-					<li><a href="history.php"><i class="icon-2x icon-calendar icon-white" data-toggle="tooltip" data-placement="bottom" title="History" id="history"></i></a></li>
-					<li><a href="stats.php"><i class="icon-2x icon-tasks icon-white" data-toggle="tooltip" data-placement="bottom" title="Stats" id="stats"></i></a></li>
-					<li><a href="users.php"><i class="icon-2x icon-group icon-white" data-toggle="tooltip" data-placement="bottom" title="Users" id="users"></i></a></li>
-					<li><a href="charts.php"><i class="icon-2x icon-bar-chart icon-white" data-toggle="tooltip" data-placement="bottom" title="Charts" id="charts"></i></a></li>
-					<li><a href="settings.php"><i class="icon-2x icon-wrench icon-white" data-toggle="tooltip" data-placement="bottom" title="Settings" id="settings"></i></a></li>
-					<li><a href="index.php?logout=1"><i class="icon-2x icon-remove icon-white" data-toggle="tooltip" data-placement="bottom" title="Logout" id="Logout"></i></a></li>
-				</ul>
-				
+		<!-- touch icons -->
+		<link rel="shortcut icon" href="images/favicon.ico">
+		<link rel="apple-touch-icon" href="images/icon_iphone.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="images/icon_ipad.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="images/icon_iphone@2x.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="images/icon_ipad@2x.png">
+	</head>
+	<body>
+		<div class="container">
+			<div class="navbar navbar-fixed-top">
+				<div class="navbar-inner">
+					<a href="index.php"><div class="logo hidden-phone"></div></a>
+					<ul class="nav">
+						<li><a href="index.php"><i class="fa fa-home fa-2x" data-toggle="tooltip" data-placement="bottom" title="Home" id="home"></i></a></li>
+						<li><a href="history.php"><i class="fa fa-history fa-2x" data-toggle="tooltip" data-placement="bottom" title="History" id="history"></i></a></li>
+						<li><a href="users.php"><i class="fa fa-users fa-2x" data-toggle="tooltip" data-placement="bottom" title="Users" id="users"></i></a></li>
+						<li class="active"><a href="stats.php"><i class="fa fa-area-chart fa-2x" data-toggle="tooltip" data-placement="bottom" title="Stats" id="stats"></i></a></li>
+						<li><a href="charts.php"><i class="fa fa-bar-chart fa-2x" data-toggle="tooltip" data-placement="bottom" title="Charts" id="charts"></i></a></li>
+						<li><a href="settings.php"><i class="fa fa-cogs fa-2x" data-toggle="tooltip" data-placement="bottom" title="Settings" id="settings"></i></a></li>
+					</ul>
+				</div>
 			</div>
 		</div>
-    </div>
 
-
-    <div class="clear"></div>
-
-    <div class="container-fluid">
-		<div class="row-fluid">
-    		<div class="span12">
-				
-				<div class='wellheader'>
-					<div class="dashboard-wellheader-no-chevron">
-						<h2><i class="icon-large icon-tasks icon-white"></i> Statistics</h2>
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span12">
+					<div class="wellheader-bg">
+						<div class="dashboard-wellheader-no-chevron">
+							<h2><i class="fa fa-area-chart"></i> Statistics</h2>
+						</div>
 					</div>
 				</div>
-
 			</div>
 		</div>
-	</div>
+		<?php
+		echo '<div class="container-fluid">';
+			echo '<div class="row-fluid">';
+				echo '<div class="span12">';
+					echo '<div class="row-fluid">';
+						echo '<div class="span6">';
+							echo '<div class="wellbg">';
+								echo '<div class="history-charts-header">';
+									echo 'Hourly Plays (Last 24 Hours)<br>';
+								echo '</div>';
+								echo '<div class="history-charts-instance-chart" id="playChartHourly"></div>';
+							echo '</div>';
+						echo '</div>';
+						echo '<div class="span6">';
+							echo '<div class="wellbg">';
+								echo '<div class="history-charts-header">';
+									echo 'Max Hourly Plays<br>';
+								echo '</div>';
+								echo '<div class="history-charts-instance-chart" id="playChartMaxHourly"></div>';
+							echo '</div>';
+						echo '</div>';
+					echo '</div>';
+					echo '<div class="row-fluid">';
+						echo '<div class="span6">';
+							echo '<div class="wellbg">';
+								echo '<div class="history-charts-header">';
+									echo 'Daily Plays<br>';
+								echo '</div>';
+								echo '<div class="history-charts-instance-chart" id="playChartDaily"></div>';
+							echo '</div>';
+						echo '</div>';
+						echo '<div class="span6">';
+							echo '<div class="wellbg">';
+								echo '<div class="history-charts-header">';
+									echo 'Monthly Plays<br>';
+								echo '</div>';
+								echo '<div class="history-charts-instance-chart" id="playChartMonthly"></div>';
+							echo '</div>';
+						echo '</div>';
+					echo '</div>';
+					echo '<div class="row-fluid">';
+						echo '<div class="span6">';
+							echo '<div class="wellbg">';
+								echo '<div class="history-charts-header">';
+									echo 'Daily Distinct Users<br>';
+								echo '</div>';
+								echo '<div class="history-charts-instance-chart" id="playChartDailyDistinct"></div>';
+							echo '</div>';
+						echo '</div>';
+						echo '<div class="span6">';
+							echo '<div class="wellbg">';
+								echo '<div class="history-charts-header">';
+									echo 'Monthly Distinct Users<br>';
+								echo '</div>';
+								echo '<div class="history-charts-instance-chart" id="playChartMonthlyDistinct"></div>';
+							echo '</div>';
+						echo '</div>';
+					echo '</div>';
+				echo '</div>';
+			echo '</div>';
+			?>
+		</div>
+		<footer></footer>
+<?php
+$database = dbconnect();
+$plexWatchDbTable = dbTable();
 
-	<?php
-	
-	date_default_timezone_set(@date_default_timezone_get());
-	
-	
-	
-	echo "<div class='container-fluid'>";
-		echo "<div class='row-fluid'>";
-			echo "<div class='span12'>";
-				
-					
-					echo "<div class='row-fluid'>";
-						echo "<div class='span6'><div class='wellbg'><div class='history-charts-header'><strong>Hourly Plays </strong>(Last 24 Hours)<br></div><div class='history-charts-instance-chart' id='playChartHourly'></div></div></div>";
-						echo "<div class='span6'><div class='wellbg'><div class='history-charts-header'><strong>Max Hourly Plays</strong><br></div><div class='history-charts-instance-chart' id='playChartMaxHourly'></div></div></div>";
-					echo "</div>";
-					echo "<div class='row-fluid'>";	
-						echo "<div class='span6'><div class='wellbg'><div class='history-charts-header'><strong>Daily Plays</strong><br></div><div class='history-charts-instance-chart'  id='playChartDaily'></div></div></div>";
-						echo "<div class='span6'><div class='wellbg'><div class='history-charts-header'><strong>Monthly Plays</strong><br></div><div class='history-charts-instance-chart' id='playChartMonthly'></div></div></div>";
-					echo "</div>";
-					echo "<div class='row-fluid'>";	
-						echo "<div class='span6'><div class='wellbg'><div class='history-charts-header'><strong>Daily Distinct Users</strong><br></div><div class='history-charts-instance-chart'  id='userChartDaily'></div></div></div>";
-						echo "<div class='span6'><div class='wellbg'><div class='history-charts-header'><strong>Monthly Distinct Users</strong><br></div><div class='history-charts-instance-chart' id='userChartMonthly'></div></div></div>";
-					echo "</div>";
-				
-			echo "</div>";
-		
-					
-					
-					$guisettingsFile = "config/config.php";
-					if (file_exists($guisettingsFile)) { 
-						require_once(dirname(__FILE__) . '/config/config.php');
-					}else{
-						header("Location: settings.php");
-					}
+$query = "SELECT " .
+		"strftime('%Y-%m-%d %H', datetime(time, 'unixepoch', 'localtime')) as date, " .
+		"COUNT(title) as count ".
+	"FROM $plexWatchDbTable " .
+	"WHERE datetime(time, 'unixepoch', 'localtime') >= " .
+		"datetime('now', '-24 hours', 'localtime') " .
+	"GROUP BY strftime('%Y-%m-%d %H', datetime(time, 'unixepoch', 'localtime')) " .
+	"ORDER BY date ASC;";
+$hourlyPlays = getResults($database, $query);
+$hourlyPlayData = array();
+while ($row = $hourlyPlays->fetch(PDO::FETCH_ASSOC)) {
+	$hourlyPlayData[] = array('x'=>$row['date'], 'y'=>(int) $row['count']);
+}
 
-					
-					if ($plexWatch['https'] == 'yes') {
-						$plexWatchPmsUrl = "https://".$plexWatch['pmsIp'].":".$plexWatch['pmsHttpsPort']."";
-					}else if ($plexWatch['https'] == 'no') {
-						$plexWatchPmsUrl = "http://".$plexWatch['pmsIp'].":".$plexWatch['pmsHttpPort']."";
-					}
-					
-					if (!empty($plexWatch['myPlexAuthToken'])) {
-						$myPlexAuthToken = $plexWatch['myPlexAuthToken'];
-						
-					}else{
-						$myPlexAuthToken = '';
-						
-					}
-										
-					$db = dbconnect();
+$query = "SELECT " .
+		"strftime('%Y-%m-%d %H', datetime(time, 'unixepoch', 'localtime')) as date, " .
+		"COUNT(title) as count " .
+	"FROM $plexWatchDbTable " .
+	"GROUP BY strftime('%Y-%m-%d %H', datetime(time, 'unixepoch', 'localtime')) " .
+	"ORDER BY count(*) desc " .
+	"LIMIT 25;";
+$maxhourlyPlays = getResults($database, $query);
+$maxhourlyPlayData = array();
+while ($row = $maxhourlyPlays->fetch(PDO::FETCH_ASSOC)) {
+	$maxhourlyPlayData[] = array('x'=>$row['date'], 'y'=>(int) $row['count']);
+}
 
-					if ($plexWatch['globalHistoryGrouping'] == "yes") {
-						$plexWatchDbTable = "grouped";
-						$numRows = $db->querySingle("SELECT COUNT(*) as count FROM $plexWatchDbTable ");
-						$results = $db->query("SELECT title, user, platform, time, stopped, ip_address, xml, paused_counter FROM processed WHERE stopped IS NULL UNION ALL SELECT title, user, platform, time, stopped, ip_address, xml, paused_counter FROM $plexWatchDbTable ORDER BY time DESC") or die ("Failed to access plexWatch database. Please check your settings.");
-							
-						
-					}else if ($plexWatch['globalHistoryGrouping'] == "no") {
-						$plexWatchDbTable = "processed";
-					
-						$numRows = $db->querySingle("SELECT COUNT(*) as count FROM $plexWatchDbTable ");
-						$results = $db->query("SELECT title, user, platform, time, stopped, ip_address, xml, paused_counter FROM $plexWatchDbTable ORDER BY time DESC") or die ("Failed to access plexWatch database. Please check settings.");
-					}	
-						
-					$hourlyPlays = $db->query("SELECT strftime('%Y-%m-%d %H', datetime(time, 'unixepoch', 'localtime')) as date, COUNT(title) as count FROM $plexWatchDbTable WHERE datetime(time, 'unixepoch', 'localtime') >= datetime('now', '-24 hours', 'localtime') GROUP BY strftime('%Y-%m-%d %H', datetime(time, 'unixepoch', 'localtime')) ORDER BY date ASC;") or die ("Failed to access plexWatch database. Please check your settings.");
-					$hourlyPlaysNum = 0;
-					$hourlyPlayFinal = '';
-					while ($hourlyPlay = $hourlyPlays->fetchArray()) {
-						$hourlyPlaysNum++;
-						$hourlyPlayDate[$hourlyPlaysNum] = $hourlyPlay['date'];
-						$hourlyPlayCount[$hourlyPlaysNum] = $hourlyPlay['count'];
-						$hourlyPlayTotal = "{ \"x\": \"".$hourlyPlayDate[$hourlyPlaysNum]."\", \"y\": ".$hourlyPlayCount[$hourlyPlaysNum]." }, ";
-						$hourlyPlayFinal .= $hourlyPlayTotal;
-					}
+$query = "SELECT " .
+		"date(time, 'unixepoch','localtime') as date, " .
+		"COUNT(title) as count " .
+	"FROM $plexWatchDbTable " .
+	"GROUP BY date " .
+	"ORDER BY time DESC " .
+	"LIMIT 30;";
+$dailyPlays = getResults($database, $query);
+$dailyPlayData = array();
+while ($row = $dailyPlays->fetch(PDO::FETCH_ASSOC)) {
+	$dailyPlayData[] = array('x'=>$row['date'], 'y'=>(int) $row['count']);
+}
 
-					$maxhourlyPlays = $db->query("SELECT strftime('%Y-%m-%d %H', datetime(time, 'unixepoch', 'localtime')) as date, COUNT(title) as count FROM $plexWatchDbTable GROUP BY strftime('%Y-%m-%d %H', datetime(time, 'unixepoch', 'localtime')) ORDER BY count(*) desc limit 25;") or die ("Failed to access plexWatch database. Please check your settings.");
-					$maxhourlyPlaysNum = 0;
-					$maxhourlyPlayFinal = '';
-					while ($maxhourlyPlay = $maxhourlyPlays->fetchArray()) {
-						$maxhourlyPlaysNum++;
-						$maxhourlyPlayDate[$maxhourlyPlaysNum] = $maxhourlyPlay['date'];
-						$maxhourlyPlayCount[$maxhourlyPlaysNum] = $maxhourlyPlay['count'];
-						$maxhourlyPlayTotal = "{ \"x\": \"".$maxhourlyPlayDate[$maxhourlyPlaysNum]."\", \"y\": ".$maxhourlyPlayCount[$maxhourlyPlaysNum]." }, ";
-						$maxhourlyPlayFinal .= $maxhourlyPlayTotal;
-					}
-						
-							
-						
-					$dailyPlays = $db->query("SELECT date(time, 'unixepoch','localtime') as date, count(title) as count FROM $plexWatchDbTable GROUP BY date ORDER BY time DESC LIMIT 30") or die ("Failed to access plexWatch database. Please check your settings.");
-					$dailyPlaysNum = 0;
-					$dailyPlayFinal = '';
-					while ($dailyPlay = $dailyPlays->fetchArray()) {
-						$dailyPlaysNum++;
-						$dailyPlayDate[$dailyPlaysNum] = $dailyPlay['date'];
-						$dailyPlayCount[$dailyPlaysNum] = $dailyPlay['count'];
-						$dailyPlayTotal = "{ \"x\": \"".$dailyPlayDate[$dailyPlaysNum]."\", \"y\": ".$dailyPlayCount[$dailyPlaysNum]." }, ";
-						$dailyPlayFinal .= $dailyPlayTotal;
-					}
-						
-					$monthlyPlays = $db->query("SELECT strftime('%Y-%m', datetime(time, 'unixepoch', 'localtime')) as date, COUNT(title) as count FROM $plexWatchDbTable WHERE datetime(time, 'unixepoch', 'localtime') >= datetime('now', '-12 months', 'localtime') GROUP BY strftime('%Y-%m', datetime(time, 'unixepoch', 'localtime'))  ORDER BY date DESC LIMIT 6;") or die ("Failed to access plexWatch database. Please check your settings.");
-					$monthlyPlaysNum = 0;
-					$monthlyPlayFinal = '';
-					while ($monthlyPlay = $monthlyPlays->fetchArray()) {
-						$monthlyPlaysNum++;
-						$monthlyPlayDate[$monthlyPlaysNum] = $monthlyPlay['date'];
-						$monthlyPlayCount[$monthlyPlaysNum] = $monthlyPlay['count'];
-						$monthlyPlayTotal = "{ \"x\": \"".$monthlyPlayDate[$monthlyPlaysNum]."\", \"y\": ".$monthlyPlayCount[$monthlyPlaysNum]." }, ";
-						$monthlyPlayFinal .= $monthlyPlayTotal;
-					}	
-					
-					// Adding Daily users
-					$sql = "SELECT date(D.time, 'unixepoch','localtime') as date
-						,(
-							SELECT COUNT(DISTINCT (CU.user))
-							FROM $plexWatchDbTable CU
-							Where date(CU.time, 'unixepoch','localtime')=date(D.time, 'unixepoch','localtime')
-						) AS count
-						FROM $plexWatchDbTable D
-						GROUP BY date(D.time, 'unixepoch','localtime')
-						ORDER BY D.time DESC LIMIT 30;";
-					$dailyUsers = $db->query($sql) or die ("Failed to access plexWatch database. Please check your settings.");
-					$dailyUsersNum = 0;
-					$dailyUserFinal = '';
-					$dailyUsersDate = array();
-					$dailyUsersCount = array();
-					while ($dailyUser = $dailyUsers->fetchArray()) {
-						$dailyUsersNum++;
-						$dailyUsersDate[$dailyUsersNum] = $dailyUser['date'];
-						$dailyUsersCount[$dailyUsersNum] = $dailyUser['count'];
-						$dailyUserTotal = "{ \"x\": \"".$dailyUsersDate[$dailyUsersNum]."\", \"y\": ".$dailyUsersCount[$dailyUsersNum]." }, ";
-						$dailyUserFinal .= $dailyUserTotal;
-					}
-					
-					$sql = "SELECT strftime('%Y-%m', datetime(D.time, 'unixepoch', 'localtime')) as date
+$query = "SELECT " .
+		"strftime('%Y-%m', datetime(time, 'unixepoch', 'localtime')) as date, " .
+		"COUNT(title) as count " .
+	"FROM $plexWatchDbTable " .
+	"WHERE datetime(time, 'unixepoch', 'localtime') >= " .
+		"datetime('now', '-12 months', 'localtime') " .
+	"GROUP BY strftime('%Y-%m', datetime(time, 'unixepoch', 'localtime')) " .
+	"ORDER BY date DESC " .
+	"LIMIT 13;";
+$monthlyPlays = getResults($database, $query);
+$monthlyPlayData = array();
+while ($row = $monthlyPlays->fetch(PDO::FETCH_ASSOC)) {
+	$monthlyPlayData[] = array('x'=>$row['date'], 'y'=>(int) $row['count']);
+}
+
+$query = "SELECT date(D.time, 'unixepoch','localtime') as date
+			,(
+				SELECT COUNT(DISTINCT (CU.user))
+				FROM $plexWatchDbTable CU
+				Where date(CU.time, 'unixepoch','localtime')=date(D.time, 'unixepoch','localtime')
+			) AS count
+			FROM $plexWatchDbTable D
+			GROUP BY date(D.time, 'unixepoch','localtime')
+			ORDER BY D.time DESC LIMIT 30;";
+$dailyPlaysDistinct = getResults($database, $query);
+$dailyPlayDataDistinct = array();
+while ($row = $dailyPlaysDistinct->fetch(PDO::FETCH_ASSOC)) {
+	$dailyPlayDataDistinct[] = array('x'=>$row['date'], 'y'=>(int) $row['count']);
+}
+
+$query = "SELECT strftime('%Y-%m', datetime(D.time, 'unixepoch', 'localtime')) as date
 						,(
 							SELECT COUNT(DISTINCT (U.user))
 							FROM $plexWatchDbTable U
@@ -215,306 +208,230 @@
 						FROM $plexWatchDbTable D
 						WHERE datetime(D.time, 'unixepoch', 'localtime') >= datetime('now', '-12 months', 'localtime') 
 						GROUP BY strftime('%Y-%m', datetime(D.time, 'unixepoch', 'localtime'))
-						ORDER BY strftime('%Y-%m', datetime(D.time, 'unixepoch', 'localtime')) DESC LIMIT 6;
-						";
-					$monthlyUsers = $db->query($sql) or die ("Failed to access plexWatch database. Please check your settings.");
-					$monthlyUsersNum = 0;
-					$monthlyUserFinal = '';
-					$monthlyUsersDate = array();
-					$monthlyUsersCount = array();
-					while ($monthlyUser = $monthlyUsers->fetchArray()) {
-						$monthlyUsersNum++;
-						$monthlyUsersDate[$monthlyUsersNum] = $monthlyUser['date'];
-						$monthlyUsersCount[$monthlyUsersNum] = $monthlyUser['count'];
-						$monthlyUserTotal = "{ \"x\": \"".$monthlyUsersDate[$monthlyUsersNum]."\", \"y\": ".$monthlyUsersCount[$monthlyUsersNum]." }, ";
-						$monthlyUserFinal .= $monthlyUserTotal;
-					}						
-					?>
-						
-					
+						ORDER BY strftime('%Y-%m', datetime(D.time, 'unixepoch', 'localtime')) DESC LIMIT 6; ";
+$monthlyPlaysDistinct = getResults($database, $query);
+$monthlyPlayDataDistinct = array();
+while ($row = $monthlyPlaysDistinct->fetch(PDO::FETCH_ASSOC)) {
+	$monthlyPlayDataDistinct[] = array('x'=>$row['date'], 'y'=>(int) $row['count']);
+}
 
-				</div>
-			</div>
-			
-		</div>
-	</div>	
+?>
+		<!-- javascript
+		================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script src="js/jquery-2.0.3.js"></script>
+		<script src="js/bootstrap.js"></script>
+		<script src="js/jquery.dataTables.js"></script>
+		<script src="js/jquery.dataTables.plugin.bootstrap_pagination.js"></script>
+		<script src="js/jquery.dataTables.plugin.date_sorting.js"></script>
+		<script src="js/d3.v3.js"></script>
+		<script src="js/xcharts.min.js"></script>
+		<script src="js/moment-with-locale.js"></script>
+		<script>
+			$(document).ready(function() {
+				$('#home').tooltip();
+			});
+			$(document).ready(function() {
+				$('#history').tooltip();
+			});
+			$(document).ready(function() {
+				$('#users').tooltip();
+			});
+			$(document).ready(function() {
+				$('#charts').tooltip();
+			});
+			$(document).ready(function() {
+				$('#settings').tooltip();
+			});
+			$(document).ready(function() {
+				$('#stats').tooltip();
+			});
+		</script>
+		<script>
+			var tt = document.createElement('div'),
+				leftOffset = -(~~$('html').css('padding-left').replace('px', '') + ~~$('body').css('margin-left').replace('px', '')),
+				topOffset = -35;
+			tt.className = 'ex-tooltip';
+			document.body.appendChild(tt);
 
-			
-
-		<footer>
-		
-		</footer>
-		
-    
-    
-    <!-- javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery-2.0.3.js"></script>
-	<script src="js/bootstrap.js"></script>
-	<script src="js/jquery.dataTables.js"></script>
-	<script src="js/jquery.dataTables.plugin.bootstrap_pagination.js"></script>
-	<script src="js/jquery.dataTables.plugin.date_sorting.js"></script>
-	<script src="js/d3.v3.js"></script> 
-	<script src="js/xcharts.min.js"></script> 
-	
-	
-	<script>
-	$(document).ready(function() {
-		$('#home').tooltip();
-	});
-	$(document).ready(function() {
-		$('#history').tooltip();
-	});
-	$(document).ready(function() {
-		$('#users').tooltip();
-	});
-	$(document).ready(function() {
-		$('#charts').tooltip();
-	});
-	$(document).ready(function() {
-		$('#settings').tooltip();
-	});
-	$(document).ready(function() {
-		$('#stats').tooltip();
-	});
-	</script>
-
-	<script>
-	var tt = document.createElement('div'),
-	  leftOffset = -(~~$('html').css('padding-left').replace('px', '') + ~~$('body').css('margin-left').replace('px', '')),
-	  topOffset = -35;
-	tt.className = 'ex-tooltip';
-	document.body.appendChild(tt);
-
-	var data = {
-	  "xScale": "ordinal",
-	  "yScale": "linear",
-	  
-	  "main": [
-		{
-		  "className": ".playChartHourly",
-		  "data": [
-			<?php echo $hourlyPlayFinal ?>
-		  ]
-		}
-	  ]
-	};
-	var opts = {
-	  "dataFormatX": function (x) { return d3.time.format('%Y-%m-%d %H').parse(x); },
-	  "tickFormatX": function (x) { return d3.time.format('%-I:00 %p')(x); },
-	  "paddingLeft": ('35'),
-	  "paddingRight": ('35'),
-	  "paddingTop": ('10'),
-	  "tickHintY": ('5'),
-	  "mouseover": function (d, i) {
-		var pos = $(this).offset();
-		$(tt).text(d3.time.format('%-I:00 %p')(d.x) + ': ' + d.y + ' play(s)')
-		  .css({top: topOffset + pos.top, left: pos.left + leftOffset})
-		  .show();
-	  },
-	  "mouseout": function (x) {
-		$(tt).hide();
-	  }
-	};
-	var myChart = new xChart('line-dotted', data, '#playChartHourly', opts);
-	</script>
-
-	<script>
-	var tt = document.createElement('div'),
-	  leftOffset = -(~~$('html').css('padding-left').replace('px', '') + ~~$('body').css('margin-left').replace('px', '')),
-	  topOffset = -35;
-	tt.className = 'ex-tooltip';
-	document.body.appendChild(tt);
-
-	var data = {
-	  "xScale": "ordinal",
-	  "yScale": "linear",
-	  
-	  "main": [
-		{
-		  "className": ".maxplayChartHourly",
-		  "data": [
-			<?php echo $maxhourlyPlayFinal ?>
-		  ]
-		}
-	  ]
-	};
-	var opts = {
-	  "dataFormatX": function (x) { return d3.time.format('%Y-%m-%d %H').parse(x); },
-	  "tickFormatX": function (x) { return d3.time.format('%b %e')(x); },
-	  "paddingLeft": ('35'),
-	  "paddingRight": ('35'),
-	  "paddingTop": ('10'),
-	  "tickHintY": ('5'),
-	  "mouseover": function (d, i) {
-		var pos = $(this).offset();
-		$(tt).text(d3.time.format('%-I:00 %p')(d.x) + ': ' + d.y + ' play(s)')
-		  .css({top: topOffset + pos.top, left: pos.left + leftOffset})
-		  .show();
-	  },
-	  "mouseout": function (x) {
-		$(tt).hide();
-	  }
-	};
-	var myChart = new xChart('bar', data, '#playChartMaxHourly', opts);
-	</script>
-	
-	<script>
-	var tt = document.createElement('div'),
-	  leftOffset = -(~~$('html').css('padding-left').replace('px', '') + ~~$('body').css('margin-left').replace('px', '')),
-	  topOffset = -35;
-	tt.className = 'ex-tooltip';
-	document.body.appendChild(tt);
-
-	var data = {
-	  "xScale": "ordinal",
-	  "yScale": "linear",
-	  "main": [
-		{
-		  "className": ".playcount",
-		  "data": [
-			<?php echo $dailyPlayFinal ?>
-		  ]
-		}
-	  ]
-	};
-	var opts = {
-	  "dataFormatX": function (x) { return d3.time.format('%Y-%m-%d').parse(x); },
-	  "tickFormatX": function (x) { return d3.time.format('%b %e')(x); },
-	  "paddingLeft": ('35'),
-	  "paddingRight": ('35'),
-	  "paddingTop": ('10'),
-	  "tickHintY": ('5'),
-	  "mouseover": function (d, i) {
-		var pos = $(this).offset();
-		$(tt).text(d3.time.format('%b %e')(d.x) + ': ' + d.y + ' play(s)')
-		  .css({top: topOffset + pos.top, left: pos.left + leftOffset})
-		  .show();
-	  },
-	  "mouseout": function (x) {
-		$(tt).hide();
-	  }
-	};
-	var myChart = new xChart('bar', data, '#playChartDaily', opts);
-	</script>
-
-	<script>
-	var tt = document.createElement('div'),
-	  leftOffset = -(~~$('html').css('padding-left').replace('px', '') + ~~$('body').css('margin-left').replace('px', '')),
-	  topOffset = -35;
-	tt.className = 'ex-tooltip';
-	document.body.appendChild(tt);
-
-	var data = {
-	  "xScale": "ordinal",
-	  "yScale": "linear",
-	  "main": [
-		{
-		  "className": ".playcount",
-		  "data": [
-			<?php echo $monthlyPlayFinal ?>
-		  ]
-		}
-	  ]
-	};
-	var opts = {
-	  "dataFormatX": function (x) { return d3.time.format('%Y-%m').parse(x); },
-	  "tickFormatX": function (x) { return d3.time.format('%b')(x); },
-	  "paddingLeft": ('35'),
-	  "paddingRight": ('35'),
-	  "paddingTop": ('10'),
-	  "tickHintY": ('5'),
-	  "mouseover": function (d, i) {
-		var pos = $(this).offset();
-		$(tt).text(d3.time.format('%b')(d.x) + ': ' + d.y + ' play(s)')
-		  .css({top: topOffset + pos.top, left: pos.left + leftOffset})
-		  .show();
-	  },
-	  "mouseout": function (x) {
-		$(tt).hide();
-	  }
-	};
-	var myChart = new xChart('line-dotted', data, '#playChartMonthly', opts);
-	</script>
-
-	<script>
-	// Adding Daily users
-		var tt = document.createElement('div'),
-		  leftOffset = -(~~$('html').css('padding-left').replace('px', '') + ~~$('body').css('margin-left').replace('px', '')),
-		  topOffset = -35;
-		tt.className = 'ex-tooltip';
-		document.body.appendChild(tt);
-
-		var data = {
-		  "xScale": "ordinal",
-		  "yScale": "linear",
-		  "main": [
-			{
-			  "className": ".playcount",
-			  "data": [
-				<?php echo $dailyUserFinal ?>
-			  ]
+			function ttText(d, i, fmt, obj) {
+				var pos = $(obj).offset();
+				$(tt).text(moment(d.x).format(fmt) + ': ' +
+						d.y + ' play' + (d.y > 1 ? 's' : ''))
+					.css({top: topOffset + pos.top, left: pos.left + leftOffset})
+					.show();
 			}
-		  ]
-		};
-		var opts = {
-		  "dataFormatX": function (x) { return d3.time.format('%Y-%m-%d').parse(x); },
-		  "tickFormatX": function (x) { return d3.time.format('%b %e')(x); },
-		  "paddingLeft": ('35'),
-		  "paddingRight": ('35'),
-		  "paddingTop": ('10'),
-		  "tickHintY": ('5'),
-		  "mouseover": function (d, i) {
-			var pos = $(this).offset();
-			$(tt).text(d3.time.format('%b %e')(d.x) + ': ' + d.y + ' user(s)')
-			  .css({top: topOffset + pos.top, left: pos.left + leftOffset})
-			  .show();
-		  },
-		  "mouseout": function (x) {
-			$(tt).hide();
-		  }
-		};
-		var myChart = new xChart('bar', data, '#userChartDaily', opts);
-	</script>
-	
-	<script>
-		var tt = document.createElement('div'),
-		  leftOffset = -(~~$('html').css('padding-left').replace('px', '') + ~~$('body').css('margin-left').replace('px', '')),
-		  topOffset = -35;
-		tt.className = 'ex-tooltip';
-		document.body.appendChild(tt);
 
-		var data = {
-		  "xScale": "ordinal",
-		  "yScale": "linear",
-		  "main": [
-			{
-			  "className": ".playcount",
-			  "data": [
-				<?php echo $monthlyUserFinal ?>
-			  ]
-			}
-		  ]
-		};
-		var opts = {
-		  "dataFormatX": function (x) { return d3.time.format('%Y-%m').parse(x); },
-		  "tickFormatX": function (x) { return d3.time.format('%b')(x); },
-		  "paddingLeft": ('35'),
-		  "paddingRight": ('35'),
-		  "paddingTop": ('10'),
-		  "tickHintY": ('5'),
-		  "mouseover": function (d, i) {
-			var pos = $(this).offset();
-			$(tt).text(d3.time.format('%b')(d.x) + ': ' + d.y + ' user(s)')
-			  .css({top: topOffset + pos.top, left: pos.left + leftOffset})
-			  .show();
-		  },
-		  "mouseout": function (x) {
-			$(tt).hide();
-		  }
-		};
-		var myChart = new xChart('line-dotted', data, '#userChartMonthly', opts);
-	</script>	
-  </body>
+			var hourlyData = {
+				"xScale": "ordinal",
+				"yScale": "linear",
+				"main": [{
+					"className": ".playChartHourly",
+					"data": JSON.parse('<?php echo json_encode($hourlyPlayData); ?>')
+				}]
+			};
+			var hourlyOpts = {
+				"dataFormatX": function (x) {
+					return d3.time.format('%Y-%m-%d %H').parse(x);
+				},
+				"tickFormatX": function (x) {
+					return moment(x).format('<?php echo $settings->getTimeFormat(); ?>');
+				},
+				"paddingLeft": ('35'),
+				"paddingRight": ('35'),
+				"paddingTop": ('10'),
+				"tickHintY": ('5'),
+				"mouseover": function(d, i) {
+					ttText(d, i, '<?php echo $settings->getTimeFormat(); ?>', this);
+				},
+				"mouseout": function (x) {
+					$(tt).hide();
+				}
+			};
+			var myChart = new xChart('line-dotted', hourlyData, '#playChartHourly', hourlyOpts);
+
+			var maxHourlyData = {
+				"xScale": "ordinal",
+				"yScale": "linear",
+				"main": [{
+					"className": ".maxplayChartHourly",
+					"data": JSON.parse('<?php echo json_encode($maxhourlyPlayData); ?>')
+				}]
+			};
+			var maxHourlyOpts = {
+				"dataFormatX": function (x) {
+					return d3.time.format('%Y-%m-%d %H').parse(x);
+				},
+				"tickFormatX": function (x) {
+					return moment(x).format('MMM D');
+				},
+				"paddingLeft": ('35'),
+				"paddingRight": ('35'),
+				"paddingTop": ('10'),
+				"tickHintY": ('5'),
+				"mouseover": function(d, i) {
+					ttText(d, i, '<?php echo $settings->getTimeFormat(); ?>', this);
+				},
+				"mouseout": function (x) {
+					$(tt).hide();
+				}
+			};
+			var myChart = new xChart('bar', maxHourlyData, '#playChartMaxHourly', maxHourlyOpts);
+
+			var dailyPlayData = {
+				"xScale": "ordinal",
+				"yScale": "linear",
+				"main": [{
+					"className": ".playcount",
+					"data": JSON.parse('<?php echo json_encode($dailyPlayData); ?>')
+				}]
+			};
+			var dailyPlayOpts = {
+				"dataFormatX": function (x) {
+					return d3.time.format('%Y-%m-%d').parse(x);
+				},
+				"tickFormatX": function (x) {
+					return moment(x).format('MMM D');
+				},
+				"paddingLeft": ('35'),
+				"paddingRight": ('35'),
+				"paddingTop": ('10'),
+				"tickHintY": ('5'),
+				"mouseover": function(d, i) {
+					ttText(d, i, 'MMM D', this);
+				},
+				"mouseout": function (x) {
+					$(tt).hide();
+				}
+			};
+			var myChart = new xChart('bar', dailyPlayData, '#playChartDaily', dailyPlayOpts);
+
+			var monthlyData = {
+				"xScale": "ordinal",
+				"yScale": "linear",
+				"main": [{
+					"className": ".playcount",
+					"data": JSON.parse('<?php echo json_encode($monthlyPlayData); ?>')
+				}]
+			};
+			var monthlyOpts = {
+				"dataFormatX": function (x) {
+					return d3.time.format('%Y-%m').parse(x);
+				},
+				"tickFormatX": function (x) {
+					return moment(x).format('MMM YYYY');
+				},
+				"paddingLeft": ('35'),
+				"paddingRight": ('35'),
+				"paddingTop": ('10'),
+				"tickHintY": ('5'),
+				"mouseover": function(d, i) {
+					ttText(d, i, 'MMM', this);
+				},
+				"mouseout": function (x) {
+					$(tt).hide();
+				}
+			};
+			var myChart = new xChart('line-dotted', monthlyData, '#playChartMonthly', monthlyOpts);
+			
+			
+			var monthlyDataDistinct = {
+				"xScale": "ordinal",
+				"yScale": "linear",
+				"main": [{
+					"className": ".playcount",
+					"data": JSON.parse('<?php echo json_encode($monthlyPlayDataDistinct); ?>')
+				}]
+			};
+			var monthlyOptsDistinct = {
+				"dataFormatX": function (x) {
+					return d3.time.format('%Y-%m').parse(x);
+				},
+				"tickFormatX": function (x) {
+					return moment(x).format('MMM YYYY');
+				},
+				"paddingLeft": ('35'),
+				"paddingRight": ('35'),
+				"paddingTop": ('10'),
+				"tickHintY": ('5'),
+				"mouseover": function(d, i) {
+					ttText(d, i, 'MMM', this);
+				},
+				"mouseout": function (x) {
+					$(tt).hide();
+				}
+			};
+			var myChart = new xChart('line-dotted', monthlyDataDistinct, '#playChartMonthlyDistinct', monthlyOptsDistinct);
+			
+			
+			var dailyPlayDataDistinct = {
+				"xScale": "ordinal",
+				"yScale": "linear",
+				"main": [{
+					"className": ".playcount",
+					"data": JSON.parse('<?php echo json_encode($dailyPlayDataDistinct); ?>')
+				}]
+			};
+			var dailyPlayOptsDistinct = {
+				"dataFormatX": function (x) {
+					return d3.time.format('%Y-%m-%d').parse(x);
+				},
+				"tickFormatX": function (x) {
+					return moment(x).format('MMM D');
+				},
+				"paddingLeft": ('35'),
+				"paddingRight": ('35'),
+				"paddingTop": ('10'),
+				"tickHintY": ('5'),
+				"mouseover": function(d, i) {
+					ttText(d, i, 'MMM D', this);
+				},
+				"mouseout": function (x) {
+					$(tt).hide();
+				}
+			};
+			var myChart = new xChart('bar', dailyPlayDataDistinct, '#playChartDailyDistinct', dailyPlayOptsDistinct);
+			
+		</script>
+	</body>
 </html>

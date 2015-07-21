@@ -1,4 +1,0 @@
-<FilesMatch ".(db|log|md|bak)$">
-    Order Allow,Deny
-    Deny from All
-</FilesMatch>
